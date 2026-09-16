@@ -1,0 +1,7 @@
+# Stable source bytes across Windows/Linux checkouts, including plan fingerprints.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.pdf binary
+*.docx binary

@@ -1,0 +1,36 @@
+import { test, expect } from '@playwright/test';
+import { execFileSync } from 'node:child_process';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+
+test('explicit OCR upload produces review-labelled source evidence',async({page})=>{
+  const errors:string[]=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('console',message=>{if(message.type()==='error'&&!message.text().includes('401')) errors.push(message.text());});
+  const bytes=execFileSync('.venv/Scripts/python.exe',['-c',"import sys; from backend.test_ocr import scan; sys.stdout.buffer.write(scan('1.1 Payment\\nPayment must be made within thirty days.'))"]);
+  await page.goto('/login');
+  await expect(page).toHaveTitle(/LexVigil/i);
+  await expect(page.getByRole('heading',{name:'Welcome back'})).toBeVisible();
+  await expect(page.locator('vite-error-overlay')).toHaveCount(0);
+  await page.getByRole('button',{name:'Create an account'}).click();
+  await page.getByLabel('Email',{exact:true}).fill(`ocr-${Date.now()}@example.com`);
+  await page.getByLabel('Password',{exact:true}).fill('synthetic-password-123');
+  await page.getByRole('button',{name:'Create account',exact:true}).click();
+  await expect(page.getByLabel('Scanned PDF OCR language')).toBeEnabled();
+  await expect(page.getByLabel('Scanned PDF OCR language')).toHaveValue('');
+  await page.getByLabel('Choose contract file').setInputFiles({name:'scan.pdf',mimeType:'application/pdf',buffer:bytes});
+  await page.getByLabel('Scanned PDF OCR language').selectOption('eng');
+  await page.getByRole('checkbox',{name:/I consent/}).check();
+  await page.getByRole('button',{name:'Analyze contract',exact:true}).click();
+  await page.getByRole('button',{name:'Open evidence viewer'}).click();
+  await expect(page.getByLabel('Extracted source text')).toContainText('Payment');
+  await expect(page.getByRole('note')).toContainText('OCR-recognized text');
+  await page.getByRole('button',{name:'Show PDF page'}).click();
+  const image=page.getByRole('img',{name:'Original PDF page 1'});
+  await expect.poll(()=>image.evaluate((el:HTMLImageElement)=>el.naturalWidth)).toBeGreaterThan(0);
+  await page.getByRole('region',{name:'Evidence viewer'}).screenshot({path:join(process.env.LEXVIGIL_E2E_ARTIFACTS||tmpdir(),'ocr-viewer-desktop.png')});
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>page.locator('.sidebar').evaluate(el=>el.getBoundingClientRect().right)).toBeLessThanOrEqual(0);
+  await page.getByRole('region',{name:'Evidence viewer'}).screenshot({path:join(process.env.LEXVIGIL_E2E_ARTIFACTS||tmpdir(),'ocr-viewer-mobile.png')});
+  expect(errors).toEqual([]);
+});

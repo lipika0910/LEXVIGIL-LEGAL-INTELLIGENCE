@@ -1,0 +1,22 @@
+import { test, expect } from '@playwright/test';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+test('managed preview displays real auth options and routes to recovery', async ({ page }) => {
+  test.skip(process.env.LEXVIGIL_MANAGED_SMOKE !== '1', 'Explicit non-mutating managed smoke only');
+  const errors: string[] = [];
+  page.on('pageerror', e => errors.push(e.message));
+  page.on('console', e => { if (e.type() === 'error' && !e.text().includes('401')) errors.push(e.text()); });
+  await page.goto('/login');
+  await expect(page).toHaveTitle(/LexVigil/i);
+  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue with Google' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Forgot password?' })).toBeVisible();
+  await expect(page.locator('vite-error-overlay')).toHaveCount(0);
+  await page.screenshot({ path: join(process.env.LEXVIGIL_E2E_ARTIFACTS || tmpdir(), 'managed-login-desktop.png'), fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: join(process.env.LEXVIGIL_E2E_ARTIFACTS || tmpdir(), 'managed-login-mobile.png'), fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('link', { name: 'Forgot password?' }).click();
+  await expect(page.getByRole('heading', { name: 'Reset your password' })).toBeVisible();
+  expect(errors).toEqual([]);
+});

@@ -1,0 +1,6 @@
+.original-consent { display:flex; align-items:flex-start; gap:12px; font-size:13px; line-height:1.6; margin:20px 0; }
+.original-consent input { width:18px; height:18px; flex:0 0 18px; margin-top:3px; }
+.original-panel { padding:22px; margin:24px 0; border:1px solid #dbe3ef; border-radius:12px; background:white; }
+.original-panel p { line-height:1.7; overflow-wrap:anywhere; }
+.original-panel .button { margin:6px 8px 6px 0; }
+@media print { .original-panel { display:none; } }

@@ -1,0 +1,1420 @@
+{
+  "schema_version": 1,
+  "baseline_date": "2026-09-13",
+  "baseline_status": "draft_pending_product_decisions",
+  "sources": [
+    {
+      "id": "DOC",
+      "path": "Plans/project_documentation.md",
+      "sha256": "a6a116d2cd2cd217778619769e1ee364dd693b5b702850eae646870e518352f9"
+    },
+    {
+      "id": "HTML",
+      "path": "Plans/lexvigil_final_definitive_package.html",
+      "sha256": "3e2fce17fa30b37d93b7e618d767b7d4547bcb3ad9fc0d48157bddfae8e729d4"
+    },
+    {
+      "id": "FIXTURES",
+      "path": "Plans/Sample Contract.md",
+      "sha256": "cf1e0fbfba261879d99bc2758e0d6b9134d2ce9516d1dbbf0d584471d23b39df"
+    }
+  ],
+  "scope_note": "Full initial dual-track product and production controls. Future-roadmap features are separately listed in decisions.md; no silent reduction to an LLM-only MVP.",
+  "requirements": [
+    {
+      "id": "P01",
+      "title": "Three complete workflows",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 16.1 Main dashboard"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Routes exist; research and dispute share an unstructured adapter.",
+      "acceptance_test": {
+        "id": "AT-P01",
+        "procedure": "From sign-in run contract, dispute and research; each renders structured evidence and actionable failures.",
+        "status": "planned",
+        "existing_tests": [
+          "tests/workflows.spec.ts"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "P02",
+      "title": "Brand and truthful claims",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 31. Recommended Product Identity"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Supplied logo used; design approval outstanding.",
+      "acceptance_test": {
+        "id": "AT-P02",
+        "procedure": "Review desktop/mobile branding; no unsupported accuracy, competitive exclusivity or legal-outcome promises.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "P03",
+      "title": "Supported scope and limitations",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 5. Scope"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Some coverage notices exist; language and domain policy unapproved.",
+      "acceptance_test": {
+        "id": "AT-P03",
+        "procedure": "Approved language/document/domain policy appears before submission and in reports; unsupported inputs do not masquerade as supported.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "D01",
+      "title": "PDF/DOCX ingestion",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.1 Document Ingestion Module"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Text PDFs and DOCX parsed; no OCR or robust complex-layout corpus.",
+      "acceptance_test": {
+        "id": "AT-D01",
+        "procedure": "Parse supported PDF/DOCX corpus including tables and schedules; extracted counts and order match annotated fixtures.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_docx_and_pdf"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "D02",
+      "title": "Scanned and mixed-page OCR",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.1 Document Ingestion Module"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Scanned or nearly empty PDF pages reject the complete document.",
+      "acceptance_test": {
+        "id": "AT-D02",
+        "procedure": "Run scanned and mixed PDFs; preserve source pages, record OCR quality, distinguish blank pages from unreadable content and expose incomplete coverage.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "D03",
+      "title": "Clause hierarchy and location",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.2 Clause and Section Parser"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Flat numeric clauses and page start/end only.",
+      "acceptance_test": {
+        "id": "AT-D03",
+        "procedure": "Reconstruct section/subsection/paragraph hierarchy, tables and annexes; source spans locate exact text; duplicate numbering remains scoped and ambiguous cases stay unresolved.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_multipage_provenance"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "D04",
+      "title": "Original source viewer",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 16.4 Evidence view"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Extracted text cards, not original-file navigation.",
+      "acceptance_test": {
+        "id": "AT-D04",
+        "procedure": "Click finding evidence to open correct PDF page/highlight; DOCX uses honest paragraph/table locations; expired or unauthorized originals cannot be read.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D03",
+        "S03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "D05",
+      "title": "Safe upload and parsing boundaries",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 15. Privacy and Security"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Extension/signature/size checks exist; multipart spooling and resource limits need audit.",
+      "acceptance_test": {
+        "id": "AT-D05",
+        "procedure": "Test signature mismatch, malformed archives, zip bombs, encrypted files, chunked oversize requests and parser timeouts; reject safely and clean temporary data.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_invalid_uploads"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "D06",
+      "title": "Document identity and reproducibility",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 26. Privacy Model"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No source hash, parser version or full provenance envelope.",
+      "acceptance_test": {
+        "id": "AT-D06",
+        "procedure": "Store owner, input hash, created time, expiry, parser/rule versions and analysis date; identical input/version reproduces deterministic facts.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G01",
+      "title": "Explicit and relative references",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.3 Cross-Reference Resolver"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Basic section/clause regex; no aliases, ranges or robust relative resolution.",
+      "acceptance_test": {
+        "id": "AT-G01",
+        "procedure": "Resolve Section 4.2, §4.2, Clause 7(b), ranges, this Section and heading aliases; preserve raw expression and alternatives instead of guessing.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_missing_reference"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G02",
+      "title": "Nested terms and aliases",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.4 Defined-Term Resolver"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Quoted means definitions and substring usage links.",
+      "acceptance_test": {
+        "id": "AT-G02",
+        "procedure": "Resolve alias chains and imported definitions; detect cycles, shadowing and scope; explain paths without collapsing unlike terms.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G03",
+      "title": "Amendment precedence and dates",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.5 Amendment and Precedence Resolver"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Limited day-value amendments; ambiguity warnings.",
+      "acceptance_test": {
+        "id": "AT-G03",
+        "procedure": "Apply explicit scoped amendments by effective date and precedence rather than text order; preserve old values and provenance; unresolved activation must not become active.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_future_amendment",
+          "backend/test_engine.py::test_ambiguous_effective_condition_not_applied"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G04",
+      "title": "Exceptions and conditions",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.6 Exception Resolver"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "One negative-control test; no general exception representation.",
+      "acceptance_test": {
+        "id": "AT-G04",
+        "procedure": "Represent except/notwithstanding/unless/subject-to edges and activation conditions; ordinary conditional exceptions do not become contradictory simultaneous duties.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_engine.py::test_clean_exception_not_conflict"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G05",
+      "title": "Typed queryable graph",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.7 Contract Knowledge Graph"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Reference list and definition records, not full typed graph.",
+      "acceptance_test": {
+        "id": "AT-G05",
+        "procedure": "All declared node/edge types validate; graph queries return adjacency and actual dependency paths; no dangling IDs or invented sequential evidence paths.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G01",
+        "G02",
+        "G03",
+        "G04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G06",
+      "title": "Obligations and constraint normalization",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.8 Obligation and Condition Extraction"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Duration regex only; no normalized obligation facts.",
+      "acceptance_test": {
+        "id": "AT-G06",
+        "procedure": "Extract actor/modality/action/object/condition with spans; normalize amounts, units, currencies, dates, percentages and ranges without equating unlike scopes or calendar/business days.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G05"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "G07",
+      "title": "Six-pass forward chaining",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 9. Inference Engine"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Procedural pattern loops; no general fact/rule engine.",
+      "acceptance_test": {
+        "id": "AT-G07",
+        "procedure": "Run structural, reference, amendment, effective-obligation, conflict and evidence passes to fixed point; version rules, bound iterations, deduplicate facts and retain derivation IDs.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G06"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C01",
+      "title": "Numeric classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C01",
+        "procedure": "On approved positive fixtures detect different liability caps under the same currency, event and scope; on negative fixtures show that currency or scope differences alone are not conflicts. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C02",
+      "title": "Temporal classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C02",
+        "procedure": "On approved positive fixtures detect a late-payment trigger precedes the amended due date; on negative fixtures show that different trigger events or business/calendar units require resolution. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C03",
+      "title": "Obligation classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C03",
+        "procedure": "On approved positive fixtures detect incompatible mandatory actions for the same actor and condition; on negative fixtures show that different actors or nonoverlapping conditions are not conflicts. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C04",
+      "title": "Permission classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C04",
+        "procedure": "On approved positive fixtures detect permission and prohibition of the same act under the same condition; on negative fixtures show that scoped exceptions reconcile the apparent mismatch. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C05",
+      "title": "Definition classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C05",
+        "procedure": "On approved positive fixtures detect incompatible active meanings of one term in the same scope; on negative fixtures show that explicit supersession is an update, not inherently a conflict. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C06",
+      "title": "Scope classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C06",
+        "procedure": "On approved positive fixtures detect overlapping incompatible applicability rules; on negative fixtures show that general and specific rules may coexist. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C07",
+      "title": "Amendment classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C07",
+        "procedure": "On approved positive fixtures detect an amendment leaves an incompatible dependent obligation; on negative fixtures show that replacement of the old term alone is not a contradiction. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C08",
+      "title": "Exception classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C08",
+        "procedure": "On approved positive fixtures detect exception and general rule remain incompatible after precedence resolution; on negative fixtures show that a valid active exception narrows the general rule. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C09",
+      "title": "Cross-reference classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C09",
+        "procedure": "On approved positive fixtures detect a target is missing or semantically misdirected; on negative fixtures show that existence of a target alone does not prove relevance. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C10",
+      "title": "Deontic classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C10",
+        "procedure": "On approved positive fixtures detect incompatible modalities on the same normalized proposition; on negative fixtures show that SHALL and MAY are not automatically contradictory. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C11",
+      "title": "Sequence classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C11",
+        "procedure": "On approved positive fixtures detect mutually incompatible event ordering constraints; on negative fixtures show that unrelated event sequences remain independent. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "C12",
+      "title": "Condition classification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 8. Contradiction Taxonomy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Enum/prompt membership exists; full class-specific deterministic coverage is not demonstrated.",
+      "acceptance_test": {
+        "id": "AT-C12",
+        "procedure": "On approved positive fixtures detect incompatible activation constraints in overlapping scope; on negative fixtures show that mutually exclusive scenarios are not automatically conflicts. Assert category, evidence, activation state and explanation. Report class precision/recall on held-out data.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "A01",
+      "title": "Evidence-constrained semantic review",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 11.3 LLM verifier contract"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Structured output, quote/ID validation and opt-in report copy exist.",
+      "acceptance_test": {
+        "id": "AT-A01",
+        "procedure": "Assess every candidate exactly once; invalid IDs/quotes, refusals and truncation fail closed; model output never silently overwrites deterministic facts.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_verification.py::test_fabricated_quote_rejected",
+          "backend/test_verification.py::test_duplicate_assessment_rejected",
+          "backend/test_verification.py::test_mocked_refusal_fails_closed"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "A02",
+      "title": "Task-aware routing and live failure handling",
+      "source": {
+        "id": "HTML",
+        "anchor": "Slide 6 of 7"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "All reviews start at Luna and escalate only on UNCERTAIN; differs from task-aware source plan.",
+      "acceptance_test": {
+        "id": "AT-A02",
+        "procedure": "Routine normalization, normal verification and high-risk ambiguity follow approved routing; test actual model access, outage, rate-limit, incomplete response and cost cap with no silent paid retry loop.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "A01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "A03",
+      "title": "Long-document dependency context",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 11.3 LLM verifier contract"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "120,000-character whole-report cap; no dependency-aware context assembly.",
+      "acceptance_test": {
+        "id": "AT-A03",
+        "procedure": "Assemble candidate dependency closure with provenance; handle long inputs without dropping relevant amendments; oversized context is explicit and coverage remains accurate.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G05",
+        "A01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "A04",
+      "title": "Confidence and review states",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 24. Safety and Reliability Requirements"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "No uncalibrated percentage; AI verdict separate, summary still counts explained items.",
+      "acceptance_test": {
+        "id": "AT-A04",
+        "procedure": "Separate candidates, model-supported, explained-away and unresolved totals; show calibration only when measured, and always distinguish legal professional review.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "A01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R01",
+      "title": "Versioned legal-source registry",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 12.1 Source priority"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Static allowlist of three domains only.",
+      "acceptance_test": {
+        "id": "AT-R01",
+        "procedure": "Register source type, authority, jurisdiction, versions, licence/access rules and refresh policy; a registry update does not require rewriting the reasoning engine.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "R02",
+      "title": "Statutory passage retrieval",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 12.2 Statutory retrieval"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Provider web-search adapter without versioned statute records.",
+      "acceptance_test": {
+        "id": "AT-R02",
+        "procedure": "Return Act/section/subsection, relevant passage, URL and effective/amendment dates as of the issue date; unknown dates are explicit.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R03",
+      "title": "Judgment retrieval and identity",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 12.3 Case-law retrieval"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Official-domain search, no dedicated case metadata verifier.",
+      "acceptance_test": {
+        "id": "AT-R03",
+        "procedure": "Confirm case name, court, date, identifiers and paragraph evidence; ambiguous identities are not verified; unavailable/CAPTCHA-protected sources produce honest limitations.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R04",
+      "title": "Citation and proposition verification",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 25. Citation Integrity Policy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "RETRIEVED labels, not source or proposition verification.",
+      "acceptance_test": {
+        "id": "AT-R04",
+        "procedure": "Every material legal proposition maps to a retrieved passage; evaluate identity, text match, currency and applicability separately; fabricated citations fail; VERIFIED never means outcome guaranteed.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R02",
+        "R03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R05",
+      "title": "Domain and jurisdiction routing",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 6. Legal-Domain Coverage Strategy"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Shared prompt and free-text location fields.",
+      "acceptance_test": {
+        "id": "AT-R05",
+        "procedure": "For Criminal, Civil procedure, Contracts, Consumer, Property, Family, Labour and Cyber/IT, use approved source coverage and issue dates; uncertain forum/law questions request missing facts instead of assuming from state alone.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R06",
+      "title": "Structured dispute analysis",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 13. Dispute Analysis Workflow"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Description/state/district form and unstructured answer.",
+      "acceptance_test": {
+        "id": "AT-R06",
+        "procedure": "Separate supplied facts, assumptions, issues, authorities, procedural considerations, evidence checklist, unresolved questions and high-stakes review triggers; validate each claim-to-source link.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R05"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R07",
+      "title": "Document-linked dispute and research",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 13. Dispute Analysis Workflow"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No optional document linkage in dispute API.",
+      "acceptance_test": {
+        "id": "AT-R07",
+        "procedure": "Attach authorized documents/analyses to a dispute or question; combine contract evidence with legal-source evidence without cross-owner leakage.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D06",
+        "R06"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "R08",
+      "title": "Independent research and source inspector",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 16.5 Legal research report"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Query form and source links; plain answer body.",
+      "acceptance_test": {
+        "id": "AT-R08",
+        "procedure": "Render structured research with per-proposition source navigation, verification reasons, timestamps and unsupported-claim handling.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "U01",
+      "title": "Evidence dashboard and filters",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 16.3 Conflict list"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Stats, filters, source cards and relationship lists exist.",
+      "acceptance_test": {
+        "id": "AT-U01",
+        "procedure": "Filters, categories, semantic verdicts and severity counts agree; no stale selected finding under empty filter; inspect actual graph paths and clauses side by side.",
+        "status": "planned",
+        "existing_tests": [
+          "tests/workflows.spec.ts"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G05",
+        "A04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "U02",
+      "title": "Complete exports",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 15. Privacy and Security"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "JSON and printable clauses/findings; print omits graph/terms and provenance versions.",
+      "acceptance_test": {
+        "id": "AT-U02",
+        "procedure": "All workflow exports preserve findings, graph paths, facts, sources, verification, uncertainty, analysis/version dates and disclaimers with readable pagination.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "U01",
+        "R08"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "U03",
+      "title": "Accessible responsive failure states",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 16. User Interface"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Desktop and 390px browser checks; broader audit missing.",
+      "acceptance_test": {
+        "id": "AT-U03",
+        "procedure": "Keyboard-only upload/review/delete, focus restoration, screen-reader labels, readable contrast, expired sessions, empty/error states and supported browsers pass.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "P01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "S01",
+      "title": "Account and session lifecycle",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 15. Privacy and Security"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Password login/registration and HTTP-only sessions; no recovery or email verification.",
+      "acceptance_test": {
+        "id": "AT-S01",
+        "procedure": "Verify email, reset password with expiring single-use token, revoke sessions and enforce safe account changes without leaking secrets.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_api.py::test_auth_validation"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [],
+      "release_evidence": []
+    },
+    {
+      "id": "S02",
+      "title": "Authorization and abuse resistance",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 15. Privacy and Security"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Owner filters and local rate limits; no distributed enforcement.",
+      "acceptance_test": {
+        "id": "AT-S02",
+        "procedure": "Cross-owner access fails for reports, jobs, originals and exports; shared limits hold across workers; CSRF, object-ID tampering and concurrent admission tested.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_api.py::test_owner_isolation_and_delete",
+          "backend/test_api.py::test_expiry_and_csrf"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "S01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "S03",
+      "title": "Data lifecycle and deletion",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 26. Privacy Model"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "24-hour report expiry and sign-out deletion; original-file policy undecided.",
+      "acceptance_test": {
+        "id": "AT-S03",
+        "procedure": "Approved consent/retention applies to originals, parsed data, queues, caches and backups; expired data cannot be read; deletion during work cannot recreate it.",
+        "status": "planned",
+        "existing_tests": [
+          "backend/test_api.py::test_save_logout_retention"
+        ],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "S02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "S04",
+      "title": "Secrets, encryption and supply chain",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 15. Privacy and Security"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Server key boundary and a few headers; host controls unconfigured.",
+      "acceptance_test": {
+        "id": "AT-S04",
+        "procedure": "No secrets in bundle/logs; HTTPS and storage encryption configured; scanner finds no unaccepted critical/high issues; uploads and third-party fetches have bounded isolation.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "D05",
+        "S02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "S05",
+      "title": "AI consent and professional-review safeguards",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 24. Safety and Reliability Requirements"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Contract AI dialog and research disclosure; high-risk path not structured.",
+      "acceptance_test": {
+        "id": "AT-S05",
+        "procedure": "Consent is recorded before transmission; provider retention disclosures accurate; configured high-risk cases surface professional-review triggers without guarantees.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R06",
+        "A01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "O01",
+      "title": "Durable jobs and cancellation",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 24. Safety and Reliability Requirements"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "In-memory thread pool; startup marks all unfinished rows failed.",
+      "acceptance_test": {
+        "id": "AT-O01",
+        "procedure": "Persist safe job inputs under approved retention; lease jobs atomically, retry idempotently, cancel, recover crashes and avoid duplicate charges/results across two workers.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "S03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "O02",
+      "title": "Database migrations and backups",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 20. Technology Stack"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "SQLite local and PostgreSQL URL support; CREATE TABLE on import.",
+      "acceptance_test": {
+        "id": "AT-O02",
+        "procedure": "Version migrations, test PostgreSQL behaviour, restore backup and rollback deploy without losing authorized saved records.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "S03"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "O03",
+      "title": "Operational visibility and limits",
+      "source": {
+        "id": "DOC",
+        "anchor": "### System"
+      },
+      "priority": "release_required",
+      "status": "partial",
+      "current": "Basic health bool and sparse logs; no provider probe or service metrics.",
+      "acceptance_test": {
+        "id": "AT-O03",
+        "procedure": "Readiness checks dependencies separately; monitor latency, queue age, failures and costs without sensitive text; set owner and global budgets and tested alerts.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "O01",
+        "O02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "O04",
+      "title": "Repeatable deployment and rollback",
+      "source": {
+        "id": "DOC",
+        "anchor": "## Deployment"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Local scripts only; deployment target not approved.",
+      "acceptance_test": {
+        "id": "AT-O04",
+        "procedure": "Locked reproducible builds, staging/production secrets, SPA/API routing, TLS, health checks, startup lifecycle and rollback validated on chosen host.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "O01",
+        "O02",
+        "S04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "E01",
+      "title": "Labelled benchmark and baselines",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 23. Evaluation Methodology"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Small synthetic regression suite; no 30–60-contract benchmark.",
+      "acceptance_test": {
+        "id": "AT-E01",
+        "procedure": "Build 30–60 controlled contracts with all twelve classes, negative controls and document-family holdouts; compare rule-only, LLM-only and hybrid on identical inputs.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "G07",
+        "A01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "E02",
+      "title": "Legal quality and release targets",
+      "source": {
+        "id": "DOC",
+        "anchor": "### Legal research"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No legal-reviewed source evaluation or approved quality thresholds.",
+      "acceptance_test": {
+        "id": "AT-E02",
+        "procedure": "Approved reviewer adjudicates source identity/support/currency/applicability by domain; report precision, recall and unsupported claims separately; targets approved before held-out results.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "R04",
+        "E01"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "E03",
+      "title": "Load, fault and security acceptance",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 24. Safety and Reliability Requirements"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Local regression tests only.",
+      "acceptance_test": {
+        "id": "AT-E03",
+        "procedure": "On staging, run approved workload and timeout, provider outage, crash, cancellation, expiry, restore and security tests; document unresolved risk and owners.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "O03",
+        "O04"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "E04",
+      "title": "Full demonstration and launch signoff",
+      "source": {
+        "id": "DOC",
+        "anchor": "# 28. Final Demonstration Scenario"
+      },
+      "priority": "release_required",
+      "status": "missing",
+      "current": "Synthetic six-clause sample; no full demonstration or deployment evidence.",
+      "acceptance_test": {
+        "id": "AT-E04",
+        "procedure": "Use a 30–50 page annotated fictional agreement and related dispute/research; complete all 14 source-demo steps with computed results, export/delete proof and human release approval.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "Partial regression evidence only; does not establish full acceptance."
+      },
+      "depends_on": [
+        "E02",
+        "E03",
+        "U02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "L01",
+      "title": "English, Tamil and Hindi input support",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 11.1 Role of the LLM"
+      },
+      "origin": "User confirmed Q01 on 2026-09-13; source multilingual requirement promoted into this release.",
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No language-specific parsing, OCR or explanation evaluation is implemented.",
+      "acceptance_test": {
+        "id": "AT-L01",
+        "procedure": "Upload and query in each approved language and representative mixed-language text; preserve Unicode and original source spans; language detection and unsupported-input messages are accurate.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "None."
+      },
+      "depends_on": [
+        "D03",
+        "R06"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "L02",
+      "title": "Tamil and Hindi OCR evaluation",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 7.1 Document Ingestion Module"
+      },
+      "origin": "User confirmed Q01 on 2026-09-13; source multilingual requirement promoted into this release.",
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No language-specific parsing, OCR or explanation evaluation is implemented.",
+      "acceptance_test": {
+        "id": "AT-L02",
+        "procedure": "Evaluate Tamil and Devanagari printed scans, including mixed English passages; report extraction quality per language/page, preserve original images and never silently substitute unreliable OCR text.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "None."
+      },
+      "depends_on": [
+        "D02"
+      ],
+      "release_evidence": []
+    },
+    {
+      "id": "L03",
+      "title": "Grounded multilingual explanations",
+      "source": {
+        "id": "DOC",
+        "anchor": "## 11.1 Role of the LLM"
+      },
+      "origin": "User confirmed Q01 on 2026-09-13; source multilingual requirement promoted into this release.",
+      "priority": "release_required",
+      "status": "missing",
+      "current": "No language-specific parsing, OCR or explanation evaluation is implemented.",
+      "acceptance_test": {
+        "id": "AT-L03",
+        "procedure": "Explain results in English, Tamil and Hindi while preserving quoted source language, names, citations, numbers and modality; label translations and evaluate semantic fidelity with competent reviewers.",
+        "status": "planned",
+        "existing_tests": [],
+        "existing_test_scope": "None."
+      },
+      "depends_on": [
+        "A01",
+        "R04",
+        "L01"
+      ],
+      "release_evidence": []
+    }
+  ],
+  "user_confirmations": [
+    {
+      "decision": "Q01",
+      "answer": "Tamil,Hindi",
+      "interpretation": "English plus Tamil and Hindi, in response to the English-only versus English-plus-languages question.",
+      "date": "2026-09-13"
+    },
+    {
+      "decision": "Q02",
+      "answer": "Yes—temporary storage with explicit consent and automatic deletion",
+      "interpretation": "Temporary originals allowed. Follow-up confirms 48 hours plus earlier manual deletion; saving reports does not extend original expiry. Provider transmission, host choice, backup expiry and account lifecycle are not automatically approved.",
+      "date": "2026-09-13"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "Q01",
+      "status": "confirmed"
+    },
+    {
+      "id": "Q02",
+      "status": "confirmed"
+    },
+    {
+      "id": "Q03",
+      "status": "confirmed"
+    },
+    {
+      "id": "Q04",
+      "status": "pending"
+    },
+    {
+      "id": "Q05",
+      "status": "pending"
+    },
+    {
+      "id": "Q06",
+      "status": "pending"
+    },
+    {
+      "id": "Q07",
+      "status": "pending"
+    },
+    {
+      "id": "Q08",
+      "status": "pending"
+    },
+    {
+      "id": "Q09",
+      "status": "pending"
+    },
+    {
+      "id": "Q10",
+      "status": "pending"
+    }
+  ]
+}

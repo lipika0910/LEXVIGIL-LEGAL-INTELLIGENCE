@@ -1,0 +1,576 @@
+
+<h2 class="sr-only">LexVigil AI Legal Intelligence Platform — final definitive architecture diagram, 7-slide pitch deck, and 30-day implementation roadmap</h2>
+<style>
+*{box-sizing:border-box}
+.lv{padding-bottom:2rem;font-family:system-ui,-apple-system,sans-serif;font-size:13px;color:var(--text-primary)}
+.lv-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem;gap:12px}
+.lv-title{font-size:18px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
+.lv-tsub{font-size:12px;color:var(--text-muted)}
+.lv-bdg{display:flex;gap:5px;flex-wrap:wrap;flex-shrink:0}
+.bdg{font-size:10px;padding:2px 9px;border-radius:20px;border:0.5px solid;font-weight:500;white-space:nowrap}
+.bdg-p{background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)}
+.bdg-g{background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)}
+.bdg-b{background:var(--bg-accent);color:var(--text-accent);border-color:var(--border-accent)}
+.lv-tabs{display:flex;gap:6px;margin-bottom:1.25rem;padding-bottom:.875rem;border-bottom:0.5px solid var(--border)}
+.lv-tb{padding:5px 16px;border-radius:20px;border:0.5px solid var(--border);background:transparent;cursor:pointer;font-size:12px;color:var(--text-secondary);transition:all .15s;font-family:inherit}
+.lv-tb:hover{background:var(--surface-1)}
+.lv-tb.on{background:var(--surface-1);color:var(--text-primary);font-weight:500;border-color:var(--border-strong)}
+.lv-pane{display:none}.lv-pane.vis{display:block}
+.leg{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;padding-top:8px;border-top:0.5px solid var(--border)}
+.leg-i{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text-muted)}
+.leg-d{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.slide{display:none}.slide.vis{display:block;min-height:370px}
+.sl-nav{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;padding-top:1rem;border-top:0.5px solid var(--border)}
+.sl-btn{padding:5px 14px;border-radius:var(--radius);border:0.5px solid var(--border-strong);background:transparent;cursor:pointer;font-size:12px;color:var(--text-secondary);font-family:inherit}
+.sl-btn:hover:not(:disabled){background:var(--surface-1)}
+.sl-btn:disabled{opacity:.3;cursor:default}
+.sl-dots{display:flex;gap:5px;align-items:center}
+.sl-dot{width:6px;height:6px;border-radius:50%;background:var(--border-strong);cursor:pointer;transition:background .15s}
+.sl-dot.on{background:var(--text-primary)}
+.sl-pg{font-size:12px;color:var(--text-muted)}
+.sl-tag{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:.5rem}
+.sl-h{font-size:18px;font-weight:500;color:var(--text-primary);line-height:1.3;margin-bottom:.625rem}
+.sl-body{font-size:13px;color:var(--text-secondary);line-height:1.7;margin-bottom:1rem}
+.sl-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1rem 0}
+.sl-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:1rem 0}
+.sl-card{background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;padding:13px}
+.sl-ct{font-size:12px;font-weight:500;color:var(--text-primary);margin-bottom:3px}
+.sl-cd{font-size:11.5px;color:var(--text-secondary);line-height:1.5}
+.sl-big{font-size:26px;font-weight:500;line-height:1;margin-bottom:3px}
+.sl-cx{border-radius:var(--radius);padding:10px 14px;font-size:12.5px;line-height:1.6;margin:10px 0;border:0.5px solid}
+.sl-g{background:var(--bg-success);border-color:var(--border-success);color:var(--text-success)}
+.sl-b{background:var(--bg-accent);border-color:var(--border-accent);color:var(--text-accent)}
+.sl-y{background:var(--bg-warning);border-color:var(--border-warning);color:var(--text-warning)}
+.sl-r{background:var(--bg-danger);border-color:var(--border-danger);color:var(--text-danger)}
+.sl-p{background:var(--bg-pro);border-color:var(--border-pro);color:var(--text-pro)}
+.cmp{width:100%;border-collapse:collapse;font-size:12px;margin:1rem 0}
+.cmp th{text-align:left;padding:7px 10px;font-size:9.5px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-muted);border-bottom:0.5px solid var(--border);font-weight:500}
+.cmp td{padding:7px 10px;border-bottom:0.5px solid var(--border);color:var(--text-secondary)}
+.cmp tr:last-child td{border-bottom:none}
+.cmp td:first-child{color:var(--text-primary);font-weight:500}
+.ty{color:var(--text-success)!important}.tn{color:var(--text-danger)!important}.tp{color:var(--text-warning)!important}
+.hop{font-family:'Courier New',monospace;font-size:12px;background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:11px 14px;line-height:2;margin:10px 0}
+.hs{color:var(--text-accent);font-weight:700}.hc{color:var(--text-danger);font-weight:700}.hg{color:var(--text-success)}
+.s-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:0.5px solid var(--border)}
+.s-row:last-child{border-bottom:none}
+.s-l{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--text-muted);width:130px;flex-shrink:0}
+.s-c{display:flex;flex-wrap:wrap;gap:4px}
+.s-chip{font-size:11px;padding:2px 9px;border-radius:20px;border:0.5px solid var(--border);color:var(--text-secondary)}
+.model-tier{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:10px 0}
+.mt-card{border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;border-top:2px solid}
+.mt-t{font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:3px}
+.mt-u{font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.mt-m{font-family:'Courier New',monospace;font-size:11px;font-weight:500}
+.road-phases{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.25rem}
+.road-ph-hd{padding:12px 14px;font-size:12px;font-weight:500;color:white;display:flex;justify-content:space-between;align-items:center}
+.road-ph-sub{font-size:10px;opacity:.8;font-weight:400}
+.road-items{padding:0 14px 12px}
+.road-item{padding:7px 0;border-bottom:0.5px solid var(--border)}
+.road-item:last-child{border-bottom:none}
+.road-it{font-size:12px;font-weight:500;color:var(--text-primary);display:block;margin-bottom:2px}
+.road-id{font-size:11px;color:var(--text-muted)}
+.road-tag{font-size:9px;padding:1px 6px;border-radius:10px;border:0.5px solid;font-weight:500;margin-right:4px}
+.ms-title{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-muted);margin-bottom:.75rem;font-weight:500}
+.ms-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.ms-card{background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px;border-left:3px solid}
+.ms-ct{font-size:11.5px;font-weight:500;color:var(--text-primary);margin-bottom:2px}
+.ms-cd{font-size:11px;color:var(--text-muted)}
+</style>
+
+<div class="lv">
+<div class="lv-hdr">
+  <div>
+    <div class="lv-title">LexVigil — AI Legal Intelligence Platform</div>
+    <div class="lv-tsub">Understand the law · Verify the precedent · Analyze the contract · Know your next step · v1.0 Final</div>
+  </div>
+  <div class="lv-bdg">
+    <span class="bdg bdg-p">Dual-track platform</span>
+    <span class="bdg bdg-b">Hybrid symbolic-AI</span>
+    <span class="bdg bdg-g">India-first</span>
+  </div>
+</div>
+
+<div class="lv-tabs">
+  <button class="lv-tb on" onclick="lvTab('arch',this)">Architecture diagram</button>
+  <button class="lv-tb" onclick="lvTab('deck',this)">Pitch deck</button>
+  <button class="lv-tb" onclick="lvTab('road',this)">30-day roadmap</button>
+</div>
+
+<!-- ═══ ARCHITECTURE ═══ -->
+<div id="lv-arch" class="lv-pane vis">
+<svg viewBox="0 0 720 608" width="100%" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>LexVigil dual-track architecture: Track A (Dispute + Legal Research) and Track B (Contract Analysis) both converge at the Reasoning Core, Candidate Conflicts, and LLM Semantic Verifier to produce an Evidence-First Legal Intelligence Report delivered to the React Dashboard</title>
+  <defs>
+    <marker id="lva" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <style>
+      .lv-lbl{fill:var(--text-muted);font-size:8.5px;font-family:system-ui;text-transform:uppercase;letter-spacing:1px;font-weight:600}
+      .lv-tlbl{fill:var(--text-secondary);font-size:10px;font-family:system-ui;font-weight:600;letter-spacing:.3px}
+      .lv-note{fill:var(--text-muted);font-size:8px;font-family:system-ui;font-style:italic}
+      .lv-arr{stroke:#94a3b8;stroke-width:1;fill:none}
+      .lv-arr-s{stroke:#94a3b8;stroke-width:.7;fill:none;stroke-dasharray:3 2}
+      .track-a-out{fill:none;stroke:#6366f1;stroke-width:1;stroke-dasharray:6 3;rx:8}
+      .track-b-out{fill:none;stroke:#0d9488;stroke-width:1;stroke-dasharray:6 3}
+    </style>
+  </defs>
+
+  <!-- ── TITLE ── -->
+  <text x="360" y="16" text-anchor="middle" font-family="system-ui" font-size="13" font-weight="700" fill="#6366f1" letter-spacing=".5">LEXVIGIL — AI LEGAL INTELLIGENCE PLATFORM</text>
+  <text x="360" y="30" text-anchor="middle" font-family="system-ui" font-size="9" fill="var(--text-muted)">Evidence-grounded dispute intelligence + cross-reference-aware contract reasoning · India</text>
+
+  <!-- ── USER / WORKFLOW ── -->
+  <g class="c-blue">
+    <rect x="250" y="40" width="220" height="38" rx="8" stroke-width="0.8"/>
+    <text class="th" x="360" y="55" text-anchor="middle" dominant-baseline="central" font-size="10.5">USER / LEGAL WORKFLOW</text>
+    <text class="ts" x="360" y="70" text-anchor="middle" dominant-baseline="central" font-size="8.5">Dispute description · Contract upload · Legal query</text>
+  </g>
+
+  <!-- arrows User → Track A/B -->
+  <line x1="300" y1="78" x2="172" y2="98" class="lv-arr" marker-end="url(#lva)"/>
+  <line x1="420" y1="78" x2="548" y2="98" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ TRACK A CONTAINER ══ -->
+  <rect x="12" y="95" width="320" height="175" rx="7" class="track-a-out"/>
+  <text class="lv-tlbl" x="172" y="110" text-anchor="middle" fill="#6366f1">A. DISPUTE + LEGAL RESEARCH</text>
+  <text class="lv-note" x="172" y="120" text-anchor="middle">Facts → issues → law → verified authorities</text>
+
+  <!-- A1 FACT/ISSUE EXTRACTION -->
+  <g class="c-purple">
+    <rect x="22" y="126" width="142" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="93" y="146" text-anchor="middle" dominant-baseline="central" font-size="9.5">FACT / ISSUE EXTRACTION</text>
+    <text class="ts" x="93" y="163" text-anchor="middle" dominant-baseline="central" font-size="8">Domain + facts + questions</text>
+  </g>
+  <!-- A2 LEGAL RETRIEVAL -->
+  <g class="c-purple">
+    <rect x="176" y="126" width="142" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="247" y="146" text-anchor="middle" dominant-baseline="central" font-size="9.5">LEGAL RETRIEVAL</text>
+    <text class="ts" x="247" y="163" text-anchor="middle" dominant-baseline="central" font-size="8">Acts / sections / procedure</text>
+  </g>
+  <!-- A1→A3, A2→A4 arrows -->
+  <line x1="93" y1="178" x2="93" y2="194" class="lv-arr" marker-end="url(#lva)"/>
+  <line x1="247" y1="178" x2="247" y2="194" class="lv-arr" marker-end="url(#lva)"/>
+  <!-- A3 CASE RETRIEVAL -->
+  <g class="c-purple">
+    <rect x="22" y="196" width="142" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="93" y="216" text-anchor="middle" dominant-baseline="central" font-size="9.5">CASE RETRIEVAL</text>
+    <text class="ts" x="93" y="233" text-anchor="middle" dominant-baseline="central" font-size="8">Supreme Court / High Court / eCourts</text>
+  </g>
+  <!-- A4 SOURCE VERIFICATION -->
+  <g class="c-purple">
+    <rect x="176" y="196" width="142" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="247" y="216" text-anchor="middle" dominant-baseline="central" font-size="9.5">SOURCE VERIFICATION</text>
+    <text class="ts" x="247" y="233" text-anchor="middle" dominant-baseline="central" font-size="8">Verified / unverified / failed</text>
+  </g>
+
+  <!-- Track A → Reasoning Core arrow -->
+  <line x1="172" y1="270" x2="172" y2="338" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ TRACK B CONTAINER ══ -->
+  <rect x="388" y="95" width="320" height="240" rx="7" class="track-b-out"/>
+  <text class="lv-tlbl" x="548" y="110" text-anchor="middle" fill="#0d9488">B. CONTRACT ANALYSIS</text>
+  <text class="lv-note" x="548" y="120" text-anchor="middle">PDF/DOCX → structure → dependencies → conflicts</text>
+
+  <!-- B1 DOCUMENT PARSER -->
+  <g class="c-teal">
+    <rect x="398" y="126" width="140" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="468" y="146" text-anchor="middle" dominant-baseline="central" font-size="9.5">DOCUMENT PARSER</text>
+    <text class="ts" x="468" y="163" text-anchor="middle" dominant-baseline="central" font-size="8">PDF / DOCX · page provenance</text>
+  </g>
+  <!-- B2 CLAUSE PARSER -->
+  <g class="c-teal">
+    <rect x="550" y="126" width="148" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="624" y="146" text-anchor="middle" dominant-baseline="central" font-size="9.5">CLAUSE PARSER</text>
+    <text class="ts" x="624" y="163" text-anchor="middle" dominant-baseline="central" font-size="8">Sections / subsections / IDs</text>
+  </g>
+  <!-- B1→B3, B2→B4 -->
+  <line x1="468" y1="178" x2="468" y2="194" class="lv-arr" marker-end="url(#lva)"/>
+  <line x1="624" y1="178" x2="624" y2="194" class="lv-arr" marker-end="url(#lva)"/>
+  <!-- B3 REFERENCE + TERM RESOLVER -->
+  <g class="c-teal">
+    <rect x="398" y="196" width="140" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="468" y="212" text-anchor="middle" dominant-baseline="central" font-size="9">REFERENCE + TERM RESOLVER</text>
+    <text class="ts" x="468" y="229" text-anchor="middle" dominant-baseline="central" font-size="8">Cross-refs / definitions</text>
+  </g>
+  <!-- B4 AMENDMENT / EXCEPTION -->
+  <g class="c-teal">
+    <rect x="550" y="196" width="148" height="52" rx="5" stroke-width="0.5"/>
+    <text class="th" x="624" y="212" text-anchor="middle" dominant-baseline="central" font-size="9.5">AMENDMENT / EXCEPTION</text>
+    <text class="ts" x="624" y="229" text-anchor="middle" dominant-baseline="central" font-size="8">Precedence / conditions</text>
+  </g>
+  <!-- B3+B4 → B5 -->
+  <line x1="468" y1="248" x2="530" y2="262" class="lv-arr" marker-end="url(#lva)"/>
+  <line x1="624" y1="248" x2="566" y2="262" class="lv-arr" marker-end="url(#lva)"/>
+  <!-- B5 CONTRACT KNOWLEDGE GRAPH -->
+  <g class="c-green">
+    <rect x="398" y="264" width="300" height="52" rx="5" stroke-width="0.8"/>
+    <text class="th" x="548" y="283" text-anchor="middle" dominant-baseline="central" font-size="10">CONTRACT KNOWLEDGE GRAPH</text>
+    <text class="ts" x="548" y="300" text-anchor="middle" dominant-baseline="central" font-size="8.5">Nodes + dependencies + effective states + provenance</text>
+  </g>
+
+  <!-- Track B → Candidate Conflicts arrow -->
+  <line x1="548" y1="316" x2="548" y2="338" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ REASONING CORE ══ -->
+  <g class="c-amber">
+    <rect x="65" y="340" width="265" height="52" rx="6" stroke-width="0.8"/>
+    <text class="th" x="197" y="360" text-anchor="middle" dominant-baseline="central" font-size="10.5">REASONING CORE</text>
+    <text class="ts" x="197" y="377" text-anchor="middle" dominant-baseline="central" font-size="8.5">Rules + forward chaining + constraints + evidence assembly</text>
+  </g>
+
+  <!-- ══ CANDIDATE CONFLICTS ══ -->
+  <g class="c-coral">
+    <rect x="390" y="340" width="265" height="52" rx="6" stroke-width="0.8"/>
+    <text class="th" x="522" y="360" text-anchor="middle" dominant-baseline="central" font-size="10.5">CANDIDATE CONFLICTS</text>
+    <text class="ts" x="522" y="377" text-anchor="middle" dominant-baseline="central" font-size="8.5">Numeric · Temporal · Obligation · Scope · Amendment</text>
+  </g>
+
+  <!-- Arrows from both to LLM VERIFIER -->
+  <line x1="197" y1="392" x2="310" y2="416" class="lv-arr" marker-end="url(#lva)"/>
+  <line x1="522" y1="392" x2="410" y2="416" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ LLM SEMANTIC VERIFIER ══ -->
+  <g class="c-purple">
+    <rect x="190" y="418" width="340" height="52" rx="6" stroke-width="0.8"/>
+    <text class="th" x="360" y="437" text-anchor="middle" dominant-baseline="central" font-size="10.5">LLM SEMANTIC VERIFIER</text>
+    <text class="ts" x="360" y="454" text-anchor="middle" dominant-baseline="central" font-size="8.5">GPT-5.6 Luna → GPT-5.6 Terra → GPT-6 Astra (escalation)</text>
+  </g>
+
+  <!-- LLM → EVIDENCE REPORT -->
+  <line x1="360" y1="470" x2="360" y2="490" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ EVIDENCE-FIRST LEGAL INTELLIGENCE REPORT ══ -->
+  <g class="c-green">
+    <rect x="60" y="492" width="600" height="56" rx="7" stroke-width="1"/>
+    <text class="th" x="360" y="513" text-anchor="middle" dominant-baseline="central" font-size="11">EVIDENCE-FIRST LEGAL INTELLIGENCE REPORT</text>
+    <text class="ts" x="360" y="532" text-anchor="middle" dominant-baseline="central" font-size="8.5">Applicable law · Verified authorities · Conflicts · Evidence chain · Confidence · Next steps · Disclaimer</text>
+  </g>
+
+  <!-- EVIDENCE → DASHBOARD -->
+  <line x1="360" y1="548" x2="360" y2="566" class="lv-arr" marker-end="url(#lva)"/>
+
+  <!-- ══ REACT WEB DASHBOARD ══ -->
+  <g class="c-blue">
+    <rect x="220" y="568" width="280" height="38" rx="8" stroke-width="0.8"/>
+    <text class="th" x="360" y="583" text-anchor="middle" dominant-baseline="central" font-size="10.5">REACT WEB DASHBOARD</text>
+    <text class="ts" x="360" y="598" text-anchor="middle" dominant-baseline="central" font-size="8.5">Dispute view · Contract viewer · Conflict list · Evidence chain</text>
+  </g>
+
+  <!-- Track labels on the sides -->
+  <text class="lv-lbl" x="4" y="162" fill="#6366f1" writing-mode="tb" glyph-orientation-vertical="0">DISPUTE RESEARCH</text>
+  <text class="lv-lbl" x="714" y="200" fill="#0d9488" writing-mode="tb" glyph-orientation-vertical="0">CONTRACT ANALYSIS</text>
+</svg>
+
+<div class="leg">
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#3b82f6 25%,transparent);border:1px solid #3b82f6"></div>User workflow / Dashboard</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#8b5cf6 25%,transparent);border:1px dashed #6366f1"></div>Track A — Dispute research</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#0d9488 25%,transparent);border:1px dashed #0d9488"></div>Track B — Contract analysis</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#22c55e 25%,transparent);border:1px solid #22c55e"></div>Knowledge graph / Report</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#f59e0b 25%,transparent);border:1px solid #f59e0b"></div>Symbolic reasoning core</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#f97316 25%,transparent);border:1px solid #f97316"></div>Contradiction detection</div>
+  <div class="leg-i"><div class="leg-d" style="background:color-mix(in srgb,#6366f1 25%,transparent);border:1px solid #6366f1"></div>LLM verification (3-tier)</div>
+</div>
+</div>
+
+<!-- ═══ PITCH DECK ═══ -->
+<div id="lv-deck" class="lv-pane">
+
+  <div id="lv-s0" class="slide vis">
+    <div class="sl-tag">Slide 1 of 7 — The Platform</div>
+    <div class="sl-h">Two legal AI problems. One evidence-grounded platform.</div>
+    <div class="sl-body">LexVigil is an AI Legal Intelligence Platform for India combining dispute research and contract contradiction detection into a single hybrid symbolic-AI system. It does not replace lawyers — it makes legal reasoning transparent, traceable, and accessible.</div>
+    <div class="sl-2">
+      <div class="sl-card" style="border-top:2px solid #6366f1">
+        <div class="sl-ct" style="color:#6366f1">Track A — Dispute Intelligence</div>
+        <div class="sl-cd">Describe a dispute in plain language. LexVigil extracts facts, classifies legal issues, retrieves verified statutes and precedents from BNS, BNSS, CPC, Consumer Act, Property, Family, Labour, and IT laws — then verifies every citation before showing it.</div>
+      </div>
+      <div class="sl-card" style="border-top:2px solid #0d9488">
+        <div class="sl-ct" style="color:#0d9488">Track B — Contract Intelligence</div>
+        <div class="sl-cd">Upload a PDF or DOCX contract. LexVigil resolves every internal reference, traces defined terms across amendments, builds a clause dependency graph, and detects contradictions across 12 conflict types — with a full evidence chain for every finding.</div>
+      </div>
+    </div>
+    <div class="sl-cx sl-b">✦ <strong>Shared core:</strong> Both tracks feed the same Reasoning Core → Contradiction Detector → LLM Verifier pipeline. Every output carries source, evidence, confidence, and a professional-review recommendation.</div>
+    <div class="sl-3">
+      <div class="sl-card"><div class="sl-big" style="color:var(--text-danger)">90%</div><div style="font-size:11px;color:var(--text-muted)">Of Indian consumers unaware of their legal rights or how to exercise them</div></div>
+      <div class="sl-card"><div class="sl-big" style="color:var(--text-warning)">3–5</div><div style="font-size:11px;color:var(--text-muted)">Clauses involved in a typical multi-hop contract contradiction — missed by LLM-only review</div></div>
+      <div class="sl-card"><div class="sl-big" style="color:var(--text-accent)">0</div><div style="font-size:11px;color:var(--text-muted)">Existing tools that combine verified legal retrieval with symbolic contract reasoning</div></div>
+    </div>
+  </div>
+
+  <div id="lv-s1" class="slide">
+    <div class="sl-tag">Slide 2 of 7 — Two Real Problems</div>
+    <div class="sl-h">Legal research and contract analysis fail for the same fundamental reason: missing dependencies.</div>
+    <div class="sl-2">
+      <div>
+        <div class="sl-cx sl-r" style="margin-bottom:8px"><strong>Problem A — Legal research</strong><br>Users describe disputes in plain language. The legally relevant concepts appear under different statutory terminology (IPC → BNS, CrPC → BNSS). Identifying provisions, procedures, exceptions and precedents requires retrieval + reasoning, not just generation. Current tools either hallucinate citations or provide non-specific information.</div>
+        <div class="hop">
+<span class="hs">User:</span> "Landlord kept ₹80,000 deposit for 6 months"
+  ↓ Naive LLM: "You can complain to consumer court"
+  ↓ LexVigil:
+  → <span class="hg">Transfer of Property Act §108</span>
+  → <span class="hg">Consumer Protection Act 2019</span>
+  → <span class="hg">State Rent Control Act (Tamil Nadu)</span>
+  → Verified HC precedents on security deposit
+  → Procedure: Legal notice → Consumer Commission
+        </div>
+      </div>
+      <div>
+        <div class="sl-cx sl-r" style="margin-bottom:8px"><strong>Problem B — Contract contradictions</strong><br>A clause in §12.4 may silently conflict with a definition from §4.2 that was amended by §17.3. LLM-only review reads clauses sequentially without resolving dependencies — it misses multi-hop conflicts every time.</div>
+        <div class="hop">
+<span class="hs">§4.2</span> "Payment Period" = <span class="hg">30 days</span>
+  ↓ defines
+<span class="hs">§8.1</span> Pay within Payment Period
+  ↓ amended by
+<span class="hs">§17.3</span> Payment Period → <span class="hg">45 days</span>
+  ↓ not updated
+<span class="hs">§12.4</span> Penalty after <span class="hc">30 days</span> ← CONFLICT
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lv-s2" class="slide">
+    <div class="sl-tag">Slide 3 of 7 — Why Existing Tools Fall Short</div>
+    <div class="sl-h">The core innovation: structure first, LLM second.</div>
+    <div class="sl-body">Every existing legal AI tool uses the same pattern: text → LLM → output. LexVigil breaks this pattern by making the legal document's internal structure computationally explicit before any AI reasoning occurs. The LLM is a verifier, not a decision-maker.</div>
+    <table class="cmp">
+      <thead><tr><th>Capability</th><th>Legal chatbots (NyayGuru etc.)</th><th>LLM contract review</th><th style="color:var(--text-accent)">LexVigil</th></tr></thead>
+      <tbody>
+        <tr><td>Verified citations — no hallucination</td><td class="tn">No</td><td class="tn">High hallucination risk</td><td class="ty">Yes — retrieve then verify</td></tr>
+        <tr><td>Cross-reference resolution</td><td class="tn">No</td><td class="tn">Implicit only</td><td class="ty">Explicit + auditable</td></tr>
+        <tr><td>Amendment-aware state propagation</td><td class="tn">No</td><td class="tn">No</td><td class="ty">Forward chaining</td></tr>
+        <tr><td>Multi-hop contradiction detection</td><td class="tn">No</td><td class="tp">Inconsistent</td><td class="ty">Deterministic</td></tr>
+        <tr><td>Evidence chain for every finding</td><td class="tn">No</td><td class="tn">No</td><td class="ty">Every output</td></tr>
+        <tr><td>12 contradiction types classified</td><td class="tn">No</td><td class="tn">No</td><td class="ty">C01–C12 taxonomy</td></tr>
+        <tr><td>BNS / BNSS (current Indian law)</td><td class="tp">Some</td><td class="tn">Mixed</td><td class="ty">Current law, explicit source</td></tr>
+      </tbody>
+    </table>
+    <div class="sl-cx sl-g">✓ Product principle: <strong>The LLM explains and verifies semantic ambiguity. The contract evidence and deterministic reasoning remain the system's grounding layer.</strong></div>
+  </div>
+
+  <div id="lv-s3" class="slide">
+    <div class="sl-tag">Slide 4 of 7 — Track A: Dispute Intelligence</div>
+    <div class="sl-h">Facts → Issues → Law → Verified authority → Next step</div>
+    <div class="sl-body">Track A accepts a plain-language dispute description and produces a structured legal intelligence report anchored to verified statutory and case authorities. No citation is presented unless it has been retrieved and verified. Outputs are probabilistic — "may apply," "potentially relevant" — not definitive legal advice.</div>
+    <div class="sl-2">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Dispute analysis workflow</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.9;font-family:'Courier New',monospace">
+          <span style="color:var(--text-muted)">1.</span> User describes dispute (natural language)<br>
+          <span style="color:var(--text-muted)">2.</span> Fact + issue extraction<br>
+          <span style="color:var(--text-muted)">3.</span> Legal-domain classification<br>
+          <span style="color:var(--text-accent)">4.</span> <b style="color:var(--text-accent)">Statute / provision retrieval</b><br>
+          <span style="color:var(--text-accent)">5.</span> <b style="color:var(--text-accent)">Procedure + forum retrieval</b><br>
+          <span style="color:var(--text-accent)">6.</span> <b style="color:var(--text-accent)">Case-law retrieval + verification</b><br>
+          <span style="color:var(--text-danger)">7.</span> Source verification (VERIFIED / UNVERIFIED / FAILED)<br>
+          <span style="color:var(--text-success)">8.</span> Structured legal intelligence report
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Legal domains covered</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Criminal</div><div style="font-size:10px;color:var(--text-muted)">BNS · BNSS (current)</div></div>
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Civil</div><div style="font-size:10px;color:var(--text-muted)">CPC · Contract Act</div></div>
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Consumer</div><div style="font-size:10px;color:var(--text-muted)">CPA 2019</div></div>
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Property</div><div style="font-size:10px;color:var(--text-muted)">TPA · Registration</div></div>
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Family</div><div style="font-size:10px;color:var(--text-muted)">Personal law acts</div></div>
+          <div class="sl-card" style="padding:8px 10px"><div style="font-size:11px;font-weight:500;color:var(--text-primary)">Labour · Cyber</div><div style="font-size:10px;color:var(--text-muted)">Labour codes · IT Act</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lv-s4" class="slide">
+    <div class="sl-tag">Slide 5 of 7 — Track B: Contract Intelligence</div>
+    <div class="sl-h">12 contradiction types. Resolved dependencies. Auditable evidence chain.</div>
+    <div class="sl-body">Track B parses PDF/DOCX contracts into a structured clause dependency graph, resolves every cross-reference and defined term, propagates amendment effects through forward chaining, and reports candidate contradictions classified into 12 types.</div>
+    <div class="sl-2">
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">6-pass forward chaining</div>
+        <div style="font-size:12px;color:var(--text-secondary);line-height:1.9;font-family:'Courier New',monospace">
+          Pass 1 → Structural facts<br>
+          Pass 2 → Definitions + references<br>
+          Pass 3 → Amendments + exceptions<br>
+          Pass 4 → Effective obligations<br>
+          Pass 5 → Conflict generation<br>
+          Pass 6 → Evidence assembly
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">12 contradiction classes</div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-danger);color:var(--text-danger);border:0.5px solid var(--border-danger)">Numeric</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-danger);color:var(--text-danger);border:0.5px solid var(--border-danger)">Temporal</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-warning);color:var(--text-warning);border:0.5px solid var(--border-warning)">Obligation</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-warning);color:var(--text-warning);border:0.5px solid var(--border-warning)">Permission</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-accent);color:var(--text-accent);border:0.5px solid var(--border-accent)">Definition</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-accent);color:var(--text-accent);border:0.5px solid var(--border-accent)">Scope</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-pro);color:var(--text-pro);border:0.5px solid var(--border-pro)">Amendment</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--bg-pro);color:var(--text-pro);border:0.5px solid var(--border-pro)">Exception</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface-1);color:var(--text-secondary);border:0.5px solid var(--border)">Cross-reference</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface-1);color:var(--text-secondary);border:0.5px solid var(--border)">Deontic</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface-1);color:var(--text-secondary);border:0.5px solid var(--border)">Sequence</span>
+          <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:var(--surface-1);color:var(--text-secondary);border:0.5px solid var(--border)">Condition</span>
+        </div>
+      </div>
+    </div>
+    <div class="sl-cx sl-g" style="margin-top:6px">Demo scenario: Upload 30–50 page services agreement → 154 clauses · 71 references · 34 defined terms · 8 amendments · <strong>6 conflicts · 2 HIGH-RISK</strong> → Open conflict LV-0042 → View §4.2→§17.3↔§12.4 chain → LLM verification · Confidence 94% · Review required.</div>
+  </div>
+
+  <div id="lv-s5" class="slide">
+    <div class="sl-tag">Slide 6 of 7 — The Reasoning Core + AI Layer</div>
+    <div class="sl-h">Three-tier AI routing. Citation integrity by design. Evidence-first always.</div>
+    <div class="sl-body">The Reasoning Core is deterministic — it produces evidence-grounded candidates before any LLM call. The LLM verifies semantic ambiguity, explains findings, and provides natural language summaries. Citation integrity is a first-class engineering requirement.</div>
+    <div class="model-tier">
+      <div class="mt-card" style="border-color:#10b981">
+        <div class="mt-t">GPT-5.6 Luna</div>
+        <div class="mt-u">Routine extraction</div>
+        <div class="mt-m" style="color:#10b981">Normalization · Parsing assist</div>
+      </div>
+      <div class="mt-card" style="border-color:#6366f1">
+        <div class="mt-t">GPT-5.6 Terra ← default</div>
+        <div class="mt-u">Normal verification</div>
+        <div class="mt-m" style="color:#6366f1">Semantic check · Explanation</div>
+      </div>
+      <div class="mt-card" style="border-color:#ec4899">
+        <div class="mt-t">GPT-6 Astra</div>
+        <div class="mt-u">Hard / high-risk escalation</div>
+        <div class="mt-m" style="color:#ec4899">Multi-hop · Ambiguous cases</div>
+      </div>
+    </div>
+    <div class="sl-2">
+      <div class="sl-cx sl-r" style="margin:0"><strong>Citation integrity rule (non-negotiable):</strong><br>User question → retrieve candidate authority → validate source → extract relevant passage → LLM summarises verified passage → display citation + source URL. <strong>Never: LLM memory → invented case name.</strong></div>
+      <div class="sl-cx sl-b" style="margin:0"><strong>Evidence output structure (every finding):</strong><br>Source clause IDs · Resolved dependency chain · Effective values · Conflict type · Severity · Confidence · Source URL · Review required? YES/NO</div>
+    </div>
+  </div>
+
+  <div id="lv-s6" class="slide">
+    <div class="sl-tag">Slide 7 of 7 — Stack + Demo</div>
+    <div class="sl-h">Final tech stack · 14-step demo · MVP acceptance criteria</div>
+    <div class="sl-2">
+      <div>
+        <div style="background:var(--surface-1);border:0.5px solid var(--border);border-radius:12px;padding:12px">
+          <div class="s-row"><span class="s-l">Frontend</span><div class="s-c"><span class="s-chip">React 18 + Vite</span><span class="s-chip">Tailwind</span><span class="s-chip">Axios</span><span class="s-chip">React Router</span></div></div>
+          <div class="s-row"><span class="s-l">Backend</span><div class="s-c"><span class="s-chip">FastAPI</span><span class="s-chip">Pydantic v2</span><span class="s-chip">Python 3.11+</span></div></div>
+          <div class="s-row"><span class="s-l">Doc parsing</span><div class="s-c"><span class="s-chip">PyMuPDF</span><span class="s-chip">python-docx</span></div></div>
+          <div class="s-row"><span class="s-l">Reasoning</span><div class="s-c"><span class="s-chip">Pure Python</span><span class="s-chip">Forward chaining</span><span class="s-chip">Constraint checks</span></div></div>
+          <div class="s-row"><span class="s-l">Storage</span><div class="s-c"><span class="s-chip">PostgreSQL + JSONB</span><span class="s-chip">pgvector (v2)</span></div></div>
+          <div class="s-row"><span class="s-l">AI</span><div class="s-c"><span class="s-chip" style="color:var(--text-accent)">GPT-5.6 Terra</span><span class="s-chip" style="color:var(--text-pro)">GPT-6 Astra</span></div></div>
+          <div class="s-row"><span class="s-l">Deploy</span><div class="s-c"><span class="s-chip">Vercel (frontend)</span><span class="s-chip">Render (backend)</span><span class="s-chip">Supabase</span></div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">14-step final demo</div>
+        <div style="font-family:'Courier New',monospace;font-size:11px;color:var(--text-secondary);line-height:1.8;background:var(--surface-1);border:0.5px solid var(--border);border-radius:var(--radius);padding:10px 12px">
+          1. Upload contract<br>
+          2. <span style="color:var(--text-accent)">154 clauses · 71 refs · 34 terms · 8 amendments</span><br>
+          3. <span style="color:var(--text-danger);font-weight:700">6 conflicts · 2 HIGH-RISK</span><br>
+          4. Open conflict LV-0042<br>
+          5. View dependency chain §4.2→§17.3↔§12.4<br>
+          6. Open source clauses side by side<br>
+          7. LLM verification → Confidence 94%<br>
+          8. Review required: YES<br>
+          9. Ask legal research question<br>
+          10. Verified statutes + HC precedents<br>
+          11. Source: VERIFIED / UNVERIFIED labels<br>
+          12. Final evidence-first report<br>
+          13. Export report<br>
+          14. Delete document (privacy control)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sl-nav">
+    <button class="sl-btn" id="lv-prev" onclick="lvNav(-1)" disabled>← Back</button>
+    <div style="display:flex;align-items:center;gap:12px"><div class="sl-dots" id="lv-dots"></div><span class="sl-pg" id="lv-pg">1 / 7</span></div>
+    <button class="sl-btn" id="lv-next" onclick="lvNav(1)">Next →</button>
+  </div>
+</div>
+
+<!-- ═══ ROADMAP ═══ -->
+<div id="lv-road" class="lv-pane">
+  <div class="road-phases">
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+      <div class="road-ph-hd" style="background:#0d9488">Week 1 — Contract Intelligence Core<span class="road-ph-sub">Days 1–7</span></div>
+      <div class="road-items">
+        <div class="road-item"><span class="road-it">PDF/DOCX ingestion + clause segmentation</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D1–2</span>PyMuPDF · python-docx · page/source preservation</span></div>
+        <div class="road-item"><span class="road-it">Cross-reference extraction + section normalization</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D3</span>§4.2 · Clause 7(b) · "as defined in" patterns</span></div>
+        <div class="road-item"><span class="road-it">Defined-term extraction + dependency graph</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D4</span>Term registry · nested definitions · alias resolution</span></div>
+        <div class="road-item"><span class="road-it">Amendment detection + precedence logic</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D5</span>Effective value propagation · supersession chains</span></div>
+        <div class="road-item"><span class="road-it">Exception patterns + condition representation</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D6</span>"notwithstanding" · "subject to" · "except"</span></div>
+        <div class="road-item"><span class="road-it">Pydantic contract models + parser tests</span><span class="road-id"><span class="road-tag" style="background:var(--bg-success);color:var(--text-success);border-color:var(--border-success)">D7</span>Clause · Definition · Amendment · Obligation models</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+      <div class="road-ph-hd" style="background:#f59e0b">Week 2 — Symbolic Reasoning Engine<span class="road-ph-sub">Days 8–14</span></div>
+      <div class="road-items">
+        <div class="road-item"><span class="road-it">Knowledge representation layer</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D8</span>Contract knowledge graph · node/edge types</span></div>
+        <div class="road-item"><span class="road-it">Forward-chaining inference engine</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D9</span>6-pass engine · R001–R007 rules · deterministic</span></div>
+        <div class="road-item"><span class="road-it">Normalized numbers / dates / durations</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D10</span>₹10L ≠ ₹5L · 30 days ≠ 45 days · SHALL vs MAY</span></div>
+        <div class="road-item"><span class="road-it">Contradiction detector (12 classes)</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D11</span>C01–C12 · Numeric/Temporal/Obligation/Scope…</span></div>
+        <div class="road-item"><span class="road-it">Evidence-chain builder</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D12</span>Source clause IDs · dependency path · confidence</span></div>
+        <div class="road-item"><span class="road-it">20+ contract test suite + error handling</span><span class="road-id"><span class="road-tag" style="background:var(--bg-warning);color:var(--text-warning);border-color:var(--border-warning)">D13–14</span>Clean + contradiction-injected + amendment contracts</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+      <div class="road-ph-hd" style="background:#6366f1">Week 3 — Legal Research + AI Integration<span class="road-ph-sub">Days 15–21</span></div>
+      <div class="road-items">
+        <div class="road-item"><span class="road-it">FastAPI service layer</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D15</span>/analyze · /disputes · /sources/verify · /research</span></div>
+        <div class="road-item"><span class="road-it">Statute retrieval layer</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D16</span>BNS · BNSS · CPC · CPA · TPA · source registry</span></div>
+        <div class="road-item"><span class="road-it">Judgment retrieval + eCourts integration</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D17</span>Supreme Court · High Court · case metadata</span></div>
+        <div class="road-item"><span class="road-it">Citation verification pipeline</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D18</span>VERIFIED / UNVERIFIED / FAILED / OUTDATED states</span></div>
+        <div class="road-item"><span class="road-it">GPT-5.6 Terra LLM verifier</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D19</span>Structured JSON output · evidence-constrained prompt</span></div>
+        <div class="road-item"><span class="road-it">GPT-6 Astra escalation + backend deploy</span><span class="road-id"><span class="road-tag" style="background:var(--bg-pro);color:var(--text-pro);border-color:var(--border-pro)">D20–21</span>Hard cases · Render deployment · env vars</span></div>
+      </div>
+    </div>
+    <div style="background:var(--surface-2);border:0.5px solid var(--border);border-radius:12px;overflow:hidden">
+      <div class="road-ph-hd" style="background:#ec4899">Week 4 — Frontend + Evaluation + Launch<span class="road-ph-sub">Days 22–30</span></div>
+      <div class="road-items">
+        <div class="road-item"><span class="road-it">Upload interface + contract viewer</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D22–23</span>UploadPanel · ContractViewer · parsing stats display</span></div>
+        <div class="road-item"><span class="road-it">Conflict dashboard + evidence chain UI</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D24–25</span>ConflictList · ConflictDetail · EvidenceChain components</span></div>
+        <div class="road-item"><span class="road-it">Dispute-analysis UI + legal research view</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D26</span>DisputeAnalyzer · LegalResearch · source verification badges</span></div>
+        <div class="road-item"><span class="road-it">End-to-end tests + benchmark evaluation</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D27–28</span>30–60 contract benchmark · precision/recall · vs baselines</span></div>
+        <div class="road-item"><span class="road-it">Documentation + final demo preparation</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D29</span>README · API docs · benchmark report</span></div>
+        <div class="road-item"><span class="road-it">Final demo / presentation / submission</span><span class="road-id"><span class="road-tag" style="background:var(--bg-danger);color:var(--text-danger);border-color:var(--border-danger)">D30</span>Live URL · 14-step demo · Vercel + Render deployed</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ms-title">8 key milestones — go / no-go gates</div>
+  <div class="ms-grid">
+    <div class="ms-card" style="border-color:#0d9488"><div class="ms-ct">Parsing live — Day 7</div><div class="ms-cd">PDF + DOCX → structured clauses with page provenance</div></div>
+    <div class="ms-card" style="border-color:#f59e0b"><div class="ms-ct">Graph queryable — Day 10</div><div class="ms-cd">Amendment chains + effective values returned correctly</div></div>
+    <div class="ms-card" style="border-color:#ef4444"><div class="ms-ct">All 12 types fire — Day 11</div><div class="ms-cd">Every contradiction class producing candidates on test suite</div></div>
+    <div class="ms-card" style="border-color:#6366f1"><div class="ms-ct">Citations verified — Day 18</div><div class="ms-cd">No citation presented without retrieval verification state</div></div>
+    <div class="ms-card" style="border-color:#a855f7"><div class="ms-ct">LLM verified — Day 20</div><div class="ms-cd">Terra → Astra routing · Structured JSON · Graceful fallback</div></div>
+    <div class="ms-card" style="border-color:#ec4899"><div class="ms-ct">Full UI — Day 26</div><div class="ms-cd">Both tracks working end-to-end · Evidence chain visible</div></div>
+    <div class="ms-card" style="border-color:#0ea5e9"><div class="ms-ct">Benchmark done — Day 28</div><div class="ms-cd">Precision/recall vs LLM-only baseline documented</div></div>
+    <div class="ms-card" style="border-color:#22c55e"><div class="ms-ct">Public launch — Day 30</div><div class="ms-cd">Live URL · 14-step demo complete · Submission ready</div></div>
+  </div>
+</div>
+</div>
+
+<script>
+function lvTab(id,btn){
+  document.querySelectorAll('.lv-tb').forEach(b=>b.classList.remove('on'));
+  document.querySelectorAll('.lv-pane').forEach(p=>p.classList.remove('vis'));
+  btn.classList.add('on');document.getElementById('lv-'+id).classList.add('vis');
+}
+let lvi=0,lvN=7;
+const dotsEl=document.getElementById('lv-dots');
+for(let i=0;i<lvN;i++){
+  const d=document.createElement('div');
+  d.className='sl-dot'+(i===0?' on':'');
+  d.onclick=()=>lvSl(i);dotsEl.appendChild(d);
+}
+function lvSl(n){
+  lvi=Math.max(0,Math.min(lvN-1,n));
+  for(let i=0;i<lvN;i++) document.getElementById('lv-s'+i).classList.toggle('vis',i===lvi);
+  document.querySelectorAll('.sl-dot').forEach((d,i)=>d.classList.toggle('on',i===lvi));
+  document.getElementById('lv-prev').disabled=lvi===0;
+  document.getElementById('lv-next').disabled=lvi===lvN-1;
+  document.getElementById('lv-pg').textContent=(lvi+1)+' / '+lvN;
+}
+function lvNav(d){lvSl(lvi+d);}
+</script>

@@ -1,0 +1,23 @@
+SYNTHETIC MULTILINGUAL STRUCTURE FIXTURE
+Not legal advice. These clauses test text preservation only.
+
+1 General
+1.1 Payment
+The Buyer shall pay within 30 days.
+(a) Notice
+Notice must be written.
+7 Obligations
+7(b) Delivery
+Goods must be inspected.
+7(b)(ii) Records
+Keep inspection records.
+2 தமிழ்
+2.1 கட்டணம்
+வாங்குபவர் முப்பது நாட்களுக்குள் கட்டணம் செலுத்த வேண்டும்.
+३ हिन्दी
+३.१ भुगतान
+खरीदार को तीस दिनों के भीतर भुगतान करना होगा।
+Schedule A — Separate schedule
+1 Schedule terms
+1.1 Scope
+This schedule has its own numbering.

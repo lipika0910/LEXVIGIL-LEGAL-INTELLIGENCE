@@ -1,0 +1,8 @@
+.evidence-viewer { margin-top:20px; }
+.evidence-controls { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin:16px 0; }
+.evidence-controls label { display:grid; gap:6px; flex:1; min-width:0; }
+.evidence-controls select { padding:10px; width:100%; max-width:100%; border:1px solid #cbd5e1; border-radius:6px; background:white; }
+.evidence-text { white-space:pre-wrap; overflow-wrap:anywhere; max-height:480px; overflow:auto; padding:16px; background:#f5f7fb; font-family:inherit; line-height:1.75; border:1px solid #dbe3ef; border-radius:8px; }
+.evidence-text mark { background:#ffe69a; color:#172132; }
+.evidence-page { display:block; max-width:100%; height:auto; margin-top:16px; border:1px solid #dbe3ef; }
+@media(max-width:600px) { .evidence-controls label { flex-basis:100%; } }

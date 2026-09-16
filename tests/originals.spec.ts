@@ -1,0 +1,38 @@
+import { test, expect } from '@playwright/test';
+import { join } from 'node:path';
+import { tmpdir } from 'node:os';
+
+test('consent, private original download and original-only deletion', async ({ page }) => {
+  const errors: string[] = [];
+  page.on('pageerror', e => errors.push(e.message));
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Create an account' }).click();
+  await page.getByLabel('Email', { exact: true }).fill(`original-${Date.now()}@example.com`);
+  await page.getByLabel('Password', { exact: true }).fill('synthetic-password-123');
+  await page.getByRole('button', { name: 'Create account', exact: true }).click();
+  await expect(page).toHaveTitle(/LexVigil/i);
+  await page.getByLabel('Choose contract file').setInputFiles({ name:'consent.txt', mimeType:'text/plain', buffer:Buffer.from('📄 Source document\n1.1 Services\nThe supplier shall provide services.\n2.1 Payment\nPayment is due in 30 days.') });
+  const consent = page.getByRole('checkbox', { name:/I consent to private temporary storage/ });
+  await expect(consent).not.toBeChecked();
+  await consent.check();
+  await page.getByRole('button', { name:'Analyze contract', exact:true }).click();
+  const original = page.getByRole('region', { name:'Original document' });
+  await expect(original.getByText(/Saving this report does not extend/)).toBeVisible();
+  await page.getByRole('button', { name:'Open evidence viewer' }).click();
+  await page.getByLabel('Highlight clause').selectOption({ index:1 });
+  await expect(page.locator('.evidence-text mark')).toHaveText(['1.1 Services','The supplier shall provide services.']);
+  const download = page.waitForEvent('download');
+  await original.getByRole('link', { name:'Download original' }).click();
+  expect((await download).suggestedFilename()).toBe('lexvigil-original');
+  await page.screenshot({ path:join(process.env.LEXVIGIL_E2E_ARTIFACTS || tmpdir(),'original-controls.png'), fullPage:true });
+  await page.setViewportSize({ width:390, height:844 });
+  await original.scrollIntoViewIfNeeded();
+  await original.screenshot({ path:join(process.env.LEXVIGIL_E2E_ARTIFACTS || tmpdir(),'original-mobile.png') });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await original.getByRole('button', { name:'Delete original', exact:true }).click();
+  await original.getByRole('button', { name:'Confirm delete original' }).click();
+  await expect(original).toContainText('No original is available');
+  await expect(page.getByRole('button', { name:'Save analysis', exact:true })).toBeVisible();
+  await expect(page.locator('vite-error-overlay')).toHaveCount(0);
+  expect(errors).toEqual([]);
+});

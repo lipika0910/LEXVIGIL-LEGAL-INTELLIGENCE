@@ -1,0 +1,18 @@
+# Deny by default: no environment files, databases, DPAPI keys, uploads or screenshots.
+**
+!backend/
+!backend/**
+backend/**/__pycache__/**
+backend/test_*.py
+backend/fixtures/**
+!src/
+!src/**
+!public/
+!public/**
+!index.html
+!package.json
+!package-lock.json
+!tsconfig.json
+!vite.config.ts
+!deployment/
+!deployment/**
