@@ -13,6 +13,8 @@ test-results/
 playwright-report/
 .runtime/
 .vercel/
+supabase/.temp/
+supabase/.branches/
 .codex/
 .agents/
 *.tsbuildinfo
