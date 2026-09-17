@@ -23,6 +23,7 @@ from sqlalchemy.exc import IntegrityError
 from .engine import analyze, extract, DEMO, TAXONOMY
 from .managed_auth import ManagedAuth
 from .configuration import validate_environment
+from .ai_policy import require_live_ai, status as ai_status, UNAVAILABLE
 
 validate_environment(os.environ)
 
@@ -197,7 +198,7 @@ def logout(request:Request,response:Response,uid=Depends(session_owner)):
 
 @app.get('/api/health')
 def health():
-    return {'status':'healthy','ai_configured':bool(os.getenv('OPENAI_API_KEY')),'environment':'production' if PRODUCTION else 'development','taxonomy':TAXONOMY}
+    return {'status':'healthy','ai_configured':False,'ai_policy':ai_status(),'environment':'production' if PRODUCTION else 'development','taxonomy':TAXONOMY}
 
 def new_job(uid,title,kind):
     rate(uid,10)
@@ -265,6 +266,7 @@ class ResearchInput(BaseModel):
     district:str=Field(default='',max_length=100)
 
 def research(body,kind):
+    require_live_ai()
     from openai import OpenAI
     client=OpenAI(timeout=90,max_retries=1)
     response=client.responses.create(model=os.getenv('OPENAI_RESEARCH_MODEL','gpt-5.6-terra'),store=False,
@@ -287,7 +289,7 @@ def research(body,kind):
 @app.post('/api/{kind}/analyze',status_code=202)
 def research_job(kind:str,body:ResearchInput,uid=Depends(owner)):
     if kind not in ('disputes','research'): raise HTTPException(404)
-    if not os.getenv('OPENAI_API_KEY'): raise HTTPException(503,'Live research is not configured. Set OPENAI_API_KEY on the server to enable source-grounded analysis.')
+    if not ai_status()['available']: raise HTTPException(503,UNAVAILABLE)
     job=new_job(uid,body.description[:80],kind)
     pool.submit(run_job,job,lambda:research(body,kind))
     return {'id':job}
@@ -329,8 +331,8 @@ def verify_analysis(aid:str,uid=Depends(owner)):
     row=get_record(aid,uid)
     if row['status']!='completed' or row['kind']!='contract':
         raise HTTPException(409,'Only completed contract reports can be reviewed.')
-    if not os.getenv('OPENAI_API_KEY'):
-        raise HTTPException(503,'Configure OPENAI_API_KEY on the server to enable semantic review.')
+    if not ai_status()['available']:
+        raise HTTPException(503,UNAVAILABLE)
     from .verification import semantic_review
     report=json.loads(row['result'])
     job=new_job(uid,row['title']+' · AI review','contract')

@@ -34,6 +34,34 @@ def register(client, email):
     assert r.status_code == 200
     assert "httponly" in r.headers["set-cookie"].lower()
 
+
+def test_live_ai_unavailable_without_jobs_or_provider_calls(monkeypatch):
+    import openai
+    from backend.app import research, ResearchInput
+    from backend.ai_policy import AIUnavailable
+    def forbidden(*args, **kwargs):
+        pytest.fail('Unapproved AI client constructed')
+    monkeypatch.setattr(openai, 'OpenAI', forbidden)
+    monkeypatch.setenv('OPENAI_API_KEY', 'synthetic-not-a-real-key')
+    with TestClient(app) as client:
+        register(client, 'india-policy@example.com')
+        health = client.get('/api/health').json()
+        assert health['ai_configured'] is False
+        assert health['ai_policy']['code'] == 'NO_ELIGIBLE_INDIA_FREE_PROVIDER'
+        for kind in ('research', 'disputes'):
+            response = client.post('/api/' + kind + '/analyze', json={
+                'description': 'Synthetic contract dispute for policy testing only.'})
+            assert response.status_code == 503
+            assert 'India-only' in response.json()['detail']
+        assert client.get('/api/analyses').json() == []
+        aid = completed(client)
+        before = client.get('/api/analyses').json()
+        assert client.post('/api/analyses/' + aid + '/verify').status_code == 503
+        assert client.get('/api/analyses').json() == before
+        assert client.get('/api/analyses/' + aid).json()['status'] == 'completed'
+    with pytest.raises(AIUnavailable):
+        research(ResearchInput(description='Synthetic research input exceeding twenty characters.'), 'research')
+
 def completed(client):
     r=client.post("/api/contracts/sample")
     assert r.status_code == 202

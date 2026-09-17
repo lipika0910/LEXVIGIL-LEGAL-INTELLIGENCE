@@ -18,6 +18,8 @@ Register an account with a password of at least 12 characters. No preconfigured 
 
 ## Optional live AI
 
+**2026-09-17 policy update:** Live AI requests are currently blocked, even when a legacy OpenAI key is configured. The user requires a free personal demonstration with India-only AI processing. No eligible provider route has yet been integrated and verified. Research and semantic-review requests return an explicit unavailable response before creating a job or sending text. Local contract analysis and OCR are unchanged. The legacy implementation description below is historical, not an enabled provider or deployment guarantee.
+
 Set server environment variables listed in .env.example. To load a local .env explicitly, add `--env-file .env` to the API command. Never paste credentials into chat or commit them.
 
 Contract analysis runs locally by default. Clicking Request AI review asks for consent before sending extracted clauses to OpenAI. It creates a separate temporary report and preserves the original. Uncertain assessments can escalate through the configured model list, capped at three calls. Provider access and billing are required. Responses are schema-validated and evidence quotes must match supplied clause text. This validates provenance, not legal correctness.

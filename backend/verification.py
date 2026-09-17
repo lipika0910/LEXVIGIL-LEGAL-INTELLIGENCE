@@ -45,6 +45,8 @@ def validate_review(report, review):
 
 def semantic_review(report, client=None):
     if client is None:
+        from .ai_policy import require_live_ai
+        require_live_ai()
         from openai import OpenAI
         client=OpenAI(timeout=90,max_retries=0)
     payload=json.dumps({"as_of":report["as_of"],"clauses":report["clauses"],"references":report["references"],"definitions":report["definitions"],"candidates":report["findings"]},ensure_ascii=False)

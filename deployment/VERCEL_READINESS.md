@@ -2,6 +2,14 @@
 
 Status: NOT APPROVED FOR PUBLIC DEPLOYMENT. A successful frontend build is not a functioning hosted backend.
 
+## Superseding clarification — 2026-09-17
+
+The user confirmed the first hosted release is a personal, non-commercial demonstration and that AI processing must remain entirely in India. This supersedes the earlier business-use answer below. Zero cost remains required. GitHub publication is now verified: main and the annotated v1 tag in Rakesh-IND/LexVigil both resolve to 7d202143897b663165e9e71ed17793c8419c3fd7. That tag is a source recovery baseline, not a deployed release.
+
+Legacy live OpenAI calls are blocked at API admission and provider construction; merely adding a key cannot enable them. Local parsing and OCR remain available. Free, India-only model routing is still an open implementation requirement, not satisfied by disabling AI.
+
+Provider research: Sarvam documents India-hosted inference and starter credits followed by per-use charges. Starter credits may support a finite zero-spend demonstration, but do not establish an ongoing free service. Account credit availability, hard no-payment behavior, eligible models and request/log retention need verification before integration. Sources: https://www.sarvam.ai/epoch/summary and https://www.sarvam.ai/api-pricing (checked 2026-09-17). No provider account was created and no document was transmitted.
+
 ## Confirmed user direction
 
 - Vercel hosting; zero-cost operation requested.

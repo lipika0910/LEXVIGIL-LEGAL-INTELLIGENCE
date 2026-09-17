@@ -37,6 +37,8 @@ Q01, Q02 and Q03 were explicitly answered. The user confirmed private accounts o
 
 ### Hosting and recovery follow-up — 2026-09-16
 
+Superseded in part on 2026-09-17: the user now explicitly confirms a personal, non-commercial first demonstration with India-only AI processing. Free-only cost remains required. The GitHub main/v1 recovery baseline has been published and verified. Provider eligibility, hosted OCR and durable persistence remain unresolved; see deployment/VERCEL_READINESS.md. Do not apply the prior commercial-release assumption to this demonstration.
+
 The user requested Vercel hosting, zero cost, fallback to available free AI models, India-focused residency with Supabase, and a new GitHub main-branch v1 recovery checkpoint. Business/law-practice use was subsequently confirmed. Vercel Hobby cannot satisfy that commercial-use request; changing host or approving a paid plan requires a user decision. Strict India-only processing versus Indian-law market focus still needs clarification. Existing OpenAI model settings are not an approved free-only routing implementation. See deployment/VERCEL_READINESS.md for constraints and deployment/RECOVERY.md for the source-only recovery scope.
 
 - Keep the existing React/TypeScript and FastAPI base; do not rewrite it just to match example library names.
