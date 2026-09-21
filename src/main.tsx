@@ -26,6 +26,7 @@ import {
   Link2,
 } from "lucide-react";
 import { api } from "./api";
+import { ReleaseScopeProvider, useReleaseScope } from './release-scope';
 import { LoginOptions, RecoveryPage, AuthResultNotice } from "./auth-options";
 import {
   ContractPage,
@@ -49,6 +50,7 @@ export function Brand() {
   );
 }
 function Landing() {
+  const scope = useReleaseScope();
   return (
     <div className="landing">
       <header className="public-header">
@@ -75,9 +77,9 @@ function Landing() {
               </em>
             </h1>
             <p>
-              Make sense of your contracts and legal questions. Trace the
-              references, examine the sources, and see how each finding
-              connects.
+              {scope.research
+                ? 'Make sense of your contracts and legal questions. Trace references, examine sources, and see how each finding connects.'
+                : 'Explore your contract’s clauses, references and potential inconsistencies with evidence-linked, rule-based analysis. Human review is required.'}
             </p>
             <div className="actions">
               <Link className="button primary" to="/login">
@@ -89,7 +91,7 @@ function Landing() {
             </div>
             <div className="hero-foot">
               <span className="small-line" />
-              Built for Indian legal research and contract review
+              {scope.research ? 'Built for Indian legal research and contract review' : 'Contract-review demonstration · Not legal advice'}
             </div>
           </div>
           <div className="hero-preview">
@@ -153,8 +155,9 @@ function Landing() {
               to the evidence behind it.
             </h2>
             <p>
-              Three ways to explore. One principle: every important conclusion
-              should lead you back to a source.
+              {scope.research
+                ? 'Three ways to explore. One principle: every important conclusion should lead you back to a source.'
+                : 'Explore contract structure and follow findings back to their clauses. Live legal research and AI review are deferred from this demonstration.'}
             </p>
           </div>
           <div className="product-rows">
@@ -180,7 +183,7 @@ function Landing() {
                 text: "Ask a focused question and examine retrieved official sources with a clear view of their limitations.",
                 url: "/app/research",
               },
-            ].map((i) => (
+            ].filter(i => i.n === '01' || scope.research).map((i) => (
               <Link to={i.url} key={i.n} className="product-row">
                 <span className="row-number">{i.n}</span>
                 <i.icon size={24} />
@@ -368,6 +371,7 @@ function Auth({ onLogin }: { onLogin: (email: string) => void }) {
   );
 }
 function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
+  const scope = useReleaseScope();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [healthy, setHealthy] = useState<boolean | null>(null);
@@ -387,7 +391,7 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
             { path: "disputes", icon: Scale, label: "Analyze dispute" },
             { path: "research", icon: Search, label: "Legal research" },
             { path: "history", icon: FolderOpen, label: "My analyses" },
-          ].map((n) => (
+          ].filter(n => !['research', 'disputes'].includes(n.path) || scope.research).map((n) => (
             <NavLink
               to={"/app/" + n.path}
               key={n.path}
@@ -451,10 +455,11 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
           </div>
         </header>
         <main className="workspace">
+          {scope.profile === 'showcase' && <p role="status">Contract-analysis showcase · Rule-based findings require human review. Live AI research, scanned-document OCR and original-file storage are deferred.</p>}
           <Routes>
             <Route path="contracts" element={<ContractPage />} />
-            <Route path="disputes" element={<ResearchPage kind="disputes" />} />
-            <Route path="research" element={<ResearchPage kind="research" />} />
+            <Route path="disputes" element={scope.research ? <ResearchPage kind="disputes" /> : <Navigate to="/app/contracts" replace />} />
+            <Route path="research" element={scope.research ? <ResearchPage kind="research" /> : <Navigate to="/app/contracts" replace />} />
             <Route path="history" element={<HistoryPage />} />
             <Route path="analyses/:id" element={<ReportPage />} />
             <Route path="*" element={<Navigate to="contracts" replace />} />
@@ -527,7 +532,7 @@ function App() {
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
-      <App />
+      <ReleaseScopeProvider><App /></ReleaseScopeProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

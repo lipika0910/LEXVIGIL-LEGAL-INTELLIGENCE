@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useReleaseScope } from './release-scope';
 import { SemanticReviewButton, PrintContract } from "./review";
 import { OriginalFile } from "./original";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -29,6 +30,8 @@ import {
 } from "./api";
 
 export function ContractPage() {
+  const scope = useReleaseScope();
+  const uploadLimitMB = scope.profile === 'development' ? 15 : 2;
   const [storeOriginal, setStoreOriginal] = useState(false);
   const [ocrLanguage, setOcrLanguage] = useState('');
   const [ocrReady, setOcrReady] = useState(false);
@@ -44,14 +47,18 @@ export function ContractPage() {
   const navigate = useNavigate();
   async function submit(sample = false) {
     if (!sample && !file) return;
+    if (!sample && file && (file.size === 0 || file.size > uploadLimitMB * 1024 * 1024)) {
+      setError(`Choose a nonempty document up to ${uploadLimitMB} MB.`);
+      return;
+    }
     setBusy(true);
     setError("");
     try {
       const form = new FormData();
       if (file) form.append("file", file);
       form.append("as_of", asOf);
-      form.append("store_original", String(storeOriginal));
-      form.append("ocr_language", ocrLanguage);
+      form.append("store_original", String(scope.original_storage && storeOriginal));
+      form.append("ocr_language", scope.ocr ? ocrLanguage : '');
       const job = await api(
         sample ? "/contracts/sample" : "/contracts/analyze",
         { method: "POST", ...(sample ? {} : { body: form }) },
@@ -109,9 +116,14 @@ export function ContractPage() {
                 : "or browse files on your device"}
             </p>
             <span className="file-formats">
-              PDF · DOCX · TXT · MD <span>Up to 15 MB · 200 PDF pages</span>
+              PDF · DOCX · TXT · MD <span>Up to {uploadLimitMB} MB · 200 PDF pages</span>
             </span>
           </label>
+          {scope.profile === 'showcase' && <p>
+            Text-based documents only. This demonstration uses rule-based analysis,
+            not AI legal advice. OCR and original-file storage are not enabled.
+            Up to 10 reports per account; delete an old report when capacity is reached.
+          </p>}
           <div className="intake-options">
             <label>
               Analyze as of
@@ -127,7 +139,7 @@ export function ContractPage() {
               date.
             </p>
           </div>
-          <label className="original-consent">
+          {scope.ocr && <label className="original-consent">
             <span>Scanned PDF OCR (local processing)
               <select aria-label="Scanned PDF OCR language" value={ocrLanguage} disabled={!ocrReady} onChange={e=>setOcrLanguage(e.target.value)}>
                 <option value="">Off — text PDFs only</option>
@@ -135,11 +147,11 @@ export function ContractPage() {
               </select>
               <small>{ocrReady ? 'Up to 20 scanned pages, 30 seconds per page. Recognized text requires review. Pages with an existing text layer keep that layer; images on those pages are not separately read.' : 'OCR runtime is unavailable or could not be checked.'}</small>
             </span>
-          </label>
-          <label className="original-consent">
+          </label>}
+          {scope.original_storage && <label className="original-consent">
             <input type="checkbox" checked={storeOriginal} onChange={e => setStoreOriginal(e.target.checked)} />
             I consent to private temporary storage of this original for up to 48 hours, with earlier manual deletion. Saving the report does not extend this time. Deleting the report or signing out of an unsaved report removes it earlier. This does not authorize sending it to an AI provider.
-          </label>
+          </label>}
           {error && (
             <p className="error" role="alert">
               {error}
@@ -508,6 +520,7 @@ function FolderIcon() {
 }
 
 export function ReportPage() {
+  const scope = useReleaseScope();
   const { id } = useParams();
   const [job, setJob] = useState<Job | null>(null),
     [error, setError] = useState(""),
@@ -598,7 +611,7 @@ export function ReportPage() {
           </p>
         </div>
         <div className="actions no-print">
-          {job?.result?.kind === "contract" && (
+          {scope.semantic_review && job?.result?.kind === "contract" && (
             <SemanticReviewButton
               id={id!}
               reviewed={job.result.verification === "AI_REVIEWED"}
@@ -668,7 +681,7 @@ export function ReportPage() {
           </button>
         </div>
       )}
-      {job?.kind === "contract" && <OriginalFile key={job.id} id={job.id} report={job.result ? job.result as Contract : undefined} />}
+      {scope.original_storage && job?.kind === "contract" && <OriginalFile key={job.id} id={job.id} report={job.result ? job.result as Contract : undefined} />}
       {job?.status === "failed" ? (
         <div className="empty">
           <AlertTriangle />

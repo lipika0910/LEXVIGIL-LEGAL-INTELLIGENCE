@@ -24,6 +24,9 @@ from .engine import analyze, extract, DEMO, TAXONOMY
 from .managed_auth import ManagedAuth
 from .configuration import validate_environment
 from .ai_policy import require_live_ai, status as ai_status, UNAVAILABLE
+from .release_scope import release_scope, require_feature
+
+RELEASE_SCOPE = release_scope(os.getenv('LEXVIGIL_RELEASE_PROFILE', 'development'))
 
 validate_environment(os.environ)
 
@@ -198,7 +201,7 @@ def logout(request:Request,response:Response,uid=Depends(session_owner)):
 
 @app.get('/api/health')
 def health():
-    return {'status':'healthy','ai_configured':False,'ai_policy':ai_status(),'environment':'production' if PRODUCTION else 'development','taxonomy':TAXONOMY}
+    return {'status':'healthy','ai_configured':False,'ai_policy':ai_status(),'release_scope':RELEASE_SCOPE,'environment':'production' if PRODUCTION else 'development','taxonomy':TAXONOMY}
 
 def new_job(uid,title,kind):
     rate(uid,10)
@@ -227,6 +230,8 @@ def run_job(job,fn):
 
 @app.post('/api/contracts/analyze',status_code=202)
 async def contract(request:Request,file:UploadFile=File(...),as_of:str=Form(default=''),store_original:bool=Form(default=False),ocr_language:str=Form(default=''),uid=Depends(owner)):
+    if ocr_language: require_feature(RELEASE_SCOPE, 'ocr')
+    if store_original: require_feature(RELEASE_SCOPE, 'original_storage')
     if ocr_language:
         from .ocr import LANGUAGES, availability
         if ocr_language not in LANGUAGES: raise HTTPException(422,'Unsupported OCR language.')
@@ -289,6 +294,7 @@ def research(body,kind):
 @app.post('/api/{kind}/analyze',status_code=202)
 def research_job(kind:str,body:ResearchInput,uid=Depends(owner)):
     if kind not in ('disputes','research'): raise HTTPException(404)
+    require_feature(RELEASE_SCOPE, 'research')
     if not ai_status()['available']: raise HTTPException(503,UNAVAILABLE)
     job=new_job(uid,body.description[:80],kind)
     pool.submit(run_job,job,lambda:research(body,kind))
@@ -328,6 +334,7 @@ def delete_analysis(aid:str,uid=Depends(owner)):
 
 @app.post('/api/analyses/{aid}/verify',status_code=202)
 def verify_analysis(aid:str,uid=Depends(owner)):
+    require_feature(RELEASE_SCOPE, 'semantic_review')
     row=get_record(aid,uid)
     if row['status']!='completed' or row['kind']!='contract':
         raise HTTPException(409,'Only completed contract reports can be reviewed.')
@@ -342,6 +349,8 @@ def verify_analysis(aid:str,uid=Depends(owner)):
 from .auth_flows import install_auth_flows
 @app.get('/api/ocr/options')
 def ocr_options(uid=Depends(owner)):
+    if not RELEASE_SCOPE['ocr']:
+        return {'available':False,'languages':[], 'reason':'Deferred from the contract-analysis showcase.'}
     from .ocr import availability
     return availability()
 originals.install(app,owner,get_record,rate)

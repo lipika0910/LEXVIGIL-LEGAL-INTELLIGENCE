@@ -20,15 +20,16 @@ class NewPassword(BaseModel):
 def digest(value):
     return hashlib.sha256(value.encode()).hexdigest()
 
-def install_auth_flows(app, db, get_provider, rate, secure, origin):
+def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initialize_schema=True):
     parsed = urlsplit(origin)
     if parsed.scheme not in ('http','https') or not parsed.netloc or parsed.path not in ('','/') or parsed.query or parsed.fragment or parsed.username:
         raise RuntimeError('APP_ORIGIN must be an origin without a path.')
     if secure and parsed.scheme != 'https':
         raise RuntimeError('Production authentication requires HTTPS.')
     origin = origin.rstrip('/')
-    with db.begin() as con:
-        con.execute(text('CREATE TABLE IF NOT EXISTS auth_flows (token TEXT PRIMARY KEY, verifier TEXT NOT NULL, purpose TEXT NOT NULL, expires DOUBLE PRECISION NOT NULL)'))
+    if initialize_schema:
+        with db.begin() as con:
+            con.execute(text('CREATE TABLE IF NOT EXISTS auth_flows (token TEXT PRIMARY KEY, verifier TEXT NOT NULL, purpose TEXT NOT NULL, expires DOUBLE PRECISION NOT NULL)'))
 
     def provider():
         value = get_provider()
