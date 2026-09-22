@@ -4,6 +4,7 @@ No startup DDL, SQLite, background queue, original storage or AI provider.
 The injected processor must provide isolated bounded text-only execution.
 """
 import hashlib
+import logging
 import secrets
 import time
 from datetime import date
@@ -25,6 +26,8 @@ from .request_limits import RequestBodyLimit
 from .showcase_slots import ShowcaseSlots
 
 MAX_UPLOAD = 2 * 1024 * 1024
+SECURITY_HEADERS = {'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff',
+                    'X-Frame-Options':'DENY', 'Referrer-Policy':'no-referrer'}
 
 
 class Credentials(BaseModel):
@@ -59,16 +62,21 @@ def create_showcase_app(transactions, provider, origin, processor):
     async def guard(request, call_next):
         if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
             if request.headers.get('origin') != origin or request.headers.get('sec-fetch-site') == 'cross-site':
-                return JSONResponse({'detail': 'Origin is not allowed.'}, status_code=403)
+                return JSONResponse({'detail': 'Origin is not allowed.'}, status_code=403, headers=SECURITY_HEADERS)
             try:
                 length = int(request.headers.get('content-length', '0'))
             except ValueError:
-                return JSONResponse({'detail': 'Invalid request length.'}, status_code=400)
+                return JSONResponse({'detail': 'Invalid request length.'}, status_code=400, headers=SECURITY_HEADERS)
             if length < 0 or length > MAX_UPLOAD + 65536:
-                return JSONResponse({'detail': 'Showcase upload limit is 2 MB.'}, status_code=413)
-        response = await call_next(request)
-        for name, value in {'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff',
-                            'X-Frame-Options':'DENY', 'Referrer-Policy':'no-referrer'}.items():
+                return JSONResponse({'detail': 'Showcase upload limit is 2 MB.'}, status_code=413, headers=SECURITY_HEADERS)
+        try:
+            response = await call_next(request)
+        except Exception as exc:
+            # Do not serialize driver errors, query parameters, cookies or
+            # exception messages into client responses or application logs.
+            logging.getLogger(__name__).error('Showcase request failed (%s)', type(exc).__name__)
+            response = JSONResponse({'detail': 'The service is temporarily unavailable. Please retry shortly.'}, status_code=503)
+        for name, value in SECURITY_HEADERS.items():
             response.headers[name] = value
         if request.url.path.startswith('/api/auth/'):
             request.scope['query_string'] = b''
