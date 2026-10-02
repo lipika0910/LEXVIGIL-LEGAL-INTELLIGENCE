@@ -84,6 +84,13 @@ test("account, sample, save, sources, export, delete and privacy", async ({
   await expect(
     page.getByRole("heading", { name: "Read between the references." }),
   ).toBeVisible();
+  await page.goto("/app/pilot");
+  await expect(
+    page.getByRole("heading", { name: "Use the evidence. Keep the judgment." }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Copy feedback template" }).click();
+  await expect(page.getByRole("button", { name: "Copied" })).toBeVisible();
+  await page.goto("/app/contracts");
   await page.getByRole("button", { name: /Analyze sample contract/ }).click();
   await expect(
     page.getByRole("heading", {

@@ -62,7 +62,7 @@ def test_google_pkce_cookie_session_and_replay(harness):
     assert provider.calls==1
 
 @pytest.mark.parametrize('fault',['state','cookie','expired','cancelled'])
-def test_callback_failure_never_creates_session(harness,fault):
+def test_callback_failure_never_creates_session(harness,fault,caplog):
     client,provider,db=harness
     callback=begin_google(client,provider)
     if fault=='state': callback=callback.split('?')[0]+'?flow=attacker'
@@ -74,6 +74,23 @@ def test_callback_failure_never_creates_session(harness,fault):
     assert 'auth_error' in r.headers['location']
     assert not client.cookies.get('lv_session')
     assert provider.calls==0
+    assert 'stage=flow' in caplog.text
+    assert 'valid-code' not in caplog.text
+    assert 'attacker' not in caplog.text
+    assert callback not in caplog.text
+
+def test_exchange_failure_diagnostics_exclude_provider_secrets(harness,caplog):
+    client,provider,db=harness
+    callback=begin_google(client,provider)
+    def reject(code,verifier):
+        raise HTTPException(400, 'private-provider-response-do-not-log')
+    provider.exchange_code=reject
+    r=client.get(callback+'&code=valid-code',follow_redirects=False)
+    assert 'auth_error=flow_failed' in r.headers['location']
+    assert 'stage=exchange status=400' in caplog.text
+    assert 'private-provider-response-do-not-log' not in caplog.text
+    assert 'valid-code' not in caplog.text
+    assert not client.cookies.get('lv_session')
 
 def test_recovery_is_restricted_single_use_and_revokes_sessions(harness):
     client,provider,db=harness

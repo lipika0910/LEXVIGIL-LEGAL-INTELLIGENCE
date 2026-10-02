@@ -33,6 +33,10 @@ def main():
             raise ValueError('The analysis exceeded the response size limit. Split the document and retry.')
     except ValueError as exc:
         output = json.dumps({'error': str(exc)[:300]}).encode('utf-8')
+    except ModuleNotFoundError:
+        output = b'{"error":"Contract processing is temporarily unavailable. Please retry later.","failure_kind":"dependency_missing"}'
+    except MemoryError:
+        output = b'{"error":"Contract processing exceeded its memory limit. Split the document and retry.","failure_kind":"memory_limit"}'
     except Exception:
         output = b'{"error":"Contract processing could not complete. Check the original and retry."}'
     sys.stdout.buffer.write(output)

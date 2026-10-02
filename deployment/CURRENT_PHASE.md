@@ -1,5 +1,24 @@
 # Current phase — 2026-09-19
 
+## Superseding checkpoint — 2026-09-25
+
+Phase 6 / G6 (release acceptance) is active for the reduced showcase.
+The user confirmed Google sign-in and sample analysis work on the updated
+hosted preview. This supersedes the older no-deployment status below.
+The latest backend suite passed 243 tests (3 skipped); frontend production
+build passed. Production configuration is being rebuilt with the accepted
+worker fix. Canonical-domain auth, upload/save/delete/export acceptance and
+hosted Linux containment remain separate checks. Full-platform Phase 3 AI,
+research, OCR and original storage remain deferred, not complete.
+
+## Controlled-pilot preparation — 2026-10-02
+
+An authenticated Pilot guide and local-only feedback template are implemented
+for the showcase. They do not collect feedback or alter data retention. See
+`PILOT_FOUNDATION_2026-10-02.md` for the completed preparation work and the
+remaining entry criteria. G7 is not active until the public-domain acceptance
+and operating-owner decisions are recorded.
+
 ## Latest checkpoint — 2026-09-21
 
 Restricted hosted logins and showcase report/auth adapters have passed live

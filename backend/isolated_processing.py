@@ -1,6 +1,7 @@
 """Cancellable, bounded local contract subprocess supervision."""
 import asyncio
 import json
+import logging
 import os
 from pathlib import Path
 import subprocess
@@ -34,6 +35,14 @@ def worker_environment():
                'tesseract_cmd', 'tessdata_prefix'}
     env = {k: v for k, v in os.environ.items() if k.lower() in allowed}
     env.update(PYTHONIOENCODING='utf-8', PYTHONDONTWRITEBYTECODE='1', OMP_THREAD_LIMIT='1')
+    # Hosted runtimes add vendored dependencies to sys.path at startup. A new
+    # interpreter does not inherit those additions. Forward resolved import
+    # directories from this trusted interpreter, never the raw environment or
+    # any document-supplied paths. Keep credentials excluded above.
+    env['PYTHONPATH'] = os.pathsep.join(dict.fromkeys(
+        str(Path(entry).resolve()) for entry in sys.path
+        if isinstance(entry, str) and entry and Path(entry).is_absolute()
+    ))
     return env
 
 
@@ -88,6 +97,8 @@ async def _run(command, payload, keep_alive=None, timeout=PROCESSING_SECONDS, he
             except (ValueError, UnicodeDecodeError):
                 raise ValueError('The isolated processor returned an invalid response.') from None
             if response.get('error'):
+                if response.get('failure_kind') in ('dependency_missing', 'memory_limit'):
+                    logging.getLogger(__name__).warning('Contract worker failure: %s', response['failure_kind'])
                 raise ValueError(str(response['error'])[:300])
             if not isinstance(response.get('result'), dict):
                 raise ValueError('The isolated processor returned an invalid result.')

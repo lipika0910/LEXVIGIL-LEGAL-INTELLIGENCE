@@ -2,6 +2,7 @@
 import base64
 import hashlib
 import hmac
+import logging
 import re
 import secrets
 import time
@@ -101,14 +102,28 @@ def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initializ
         return {'message':'If this address is eligible, a reset email will arrive. Open the newest link in this same browser within 10 minutes.'}
 
     def finish(request,purpose):
+        stage = 'provider'
         try:
             auth = provider()
+            stage = 'flow'
             verifier, code = consume_flow(request,purpose)
+            stage = 'exchange'
             identity,access,ttl = auth.exchange_code(code,verifier)
             target = '/reset-password' if purpose=='recovery' else '/app/contracts'
             response = RedirectResponse(origin+target,status_code=303)
+            stage = 'session'
             issue_session(response,identity,access,ttl,purpose=='recovery')
-        except HTTPException:
+            logging.getLogger(__name__).info('Auth callback completed (%s)', purpose)
+        except HTTPException as exc:
+            # Fixed labels and booleans only, never credentials or identities.
+            logging.getLogger(__name__).warning(
+                'Auth callback rejected purpose=%s stage=%s status=%s flow_cookie=%s flow_query=%s code=%s provider_error=%s',
+                purpose, stage, exc.status_code,
+                bool(request.cookies.get('lv_'+purpose+'_flow')),
+                bool(request.query_params.get('flow')),
+                bool(request.query_params.get('code')),
+                bool(request.query_params.get('error')),
+            )
             response = RedirectResponse(origin+'/login?auth_error=flow_failed',status_code=303)
         response.delete_cookie('lv_'+purpose+'_flow',path='/api/auth')
         return response

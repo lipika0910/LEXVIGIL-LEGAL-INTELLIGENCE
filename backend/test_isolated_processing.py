@@ -122,6 +122,18 @@ def test_worker_environment_excludes_credentials(monkeypatch):
     assert asyncio.run(_run([sys.executable, '-c', code], b'')) == {'secret': None}
 
 
+def test_worker_inherits_runtime_dependency_paths_without_raw_pythonpath(tmp_path, monkeypatch):
+    vendor = tmp_path / 'runtime-vendor'
+    vendor.mkdir()
+    (vendor / 'synthetic_hosted_dependency.py').write_text('VALUE = 42', encoding='utf-8')
+    monkeypatch.syspath_prepend(str(vendor))
+    monkeypatch.setenv('PYTHONPATH', 'untrusted-environment-path')
+    monkeypatch.setenv('LEXVIGIL_DB_AUTH_PASSWORD', 'synthetic-password')
+    code = "import sys,os,json;sys.stdin.buffer.read();import synthetic_hosted_dependency as d;print(json.dumps({'result':{'value':d.VALUE,'secret':os.getenv('LEXVIGIL_DB_AUTH_PASSWORD')}}))"
+    assert asyncio.run(_run([sys.executable, '-c', code], b'')) == {'value': 42, 'secret': None}
+    assert 'untrusted-environment-path' not in worker_environment()['PYTHONPATH']
+
+
 @pytest.mark.parametrize('output', ['not-json', '[]', '{"result":false}'])
 def test_invalid_child_response_fails_closed(output):
     code = 'import sys;sys.stdin.buffer.read();print(' + repr(output) + ')'

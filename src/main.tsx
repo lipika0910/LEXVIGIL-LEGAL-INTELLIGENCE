@@ -24,6 +24,7 @@ import {
   ChevronRight,
   Activity,
   Link2,
+  ClipboardCheck,
 } from "lucide-react";
 import { api } from "./api";
 import { ReleaseScopeProvider, useReleaseScope } from './release-scope';
@@ -34,6 +35,7 @@ import {
   HistoryPage,
   ReportPage,
 } from "./workspace";
+import { PilotPage } from "./pilot";
 import "./styles.css";
 import "./brand.css";
 
@@ -391,7 +393,8 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
             { path: "disputes", icon: Scale, label: "Analyze dispute" },
             { path: "research", icon: Search, label: "Legal research" },
             { path: "history", icon: FolderOpen, label: "My analyses" },
-          ].filter(n => !['research', 'disputes'].includes(n.path) || scope.research).map((n) => (
+            { path: "pilot", icon: ClipboardCheck, label: "Pilot guide" },
+          ].filter(n => (!['research', 'disputes'].includes(n.path) || scope.research) && (n.path !== 'pilot' || scope.profile === 'showcase')).map((n) => (
             <NavLink
               to={"/app/" + n.path}
               key={n.path}
@@ -461,6 +464,7 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
             <Route path="disputes" element={scope.research ? <ResearchPage kind="disputes" /> : <Navigate to="/app/contracts" replace />} />
             <Route path="research" element={scope.research ? <ResearchPage kind="research" /> : <Navigate to="/app/contracts" replace />} />
             <Route path="history" element={<HistoryPage />} />
+            <Route path="pilot" element={<PilotPage />} />
             <Route path="analyses/:id" element={<ReportPage />} />
             <Route path="*" element={<Navigate to="contracts" replace />} />
           </Routes>
