@@ -355,3 +355,6 @@ def ocr_options(uid=Depends(owner)):
     return availability()
 originals.install(app,owner,get_record,rate)
 install_auth_flows(app,db,lambda:managed_auth,rate,PRODUCTION,os.getenv('APP_ORIGIN','http://127.0.0.1:5173'))
+
+from .case_routes import install_case_routes
+install_case_routes(app, db, owner)

@@ -43,7 +43,8 @@ try {
   if (!local && !existsSync(config)) throw new Error('Missing .env.supabase.development. Supabase configuration is required; no silent fallback to local accounts.');
   await freePort(8000);
   await freePort(5173);
-  launch(python, ['-m', 'uvicorn', 'backend.app:app', '--host', '127.0.0.1', '--port', '8000', '--no-access-log', ...(!local ? ['--env-file', config] : [])], { ...process.env, AUTH_PROVIDER: local ? 'local' : 'supabase', APP_ORIGIN: 'http://127.0.0.1:5173' });
+  const encryptionKey = process.env.ORIGINAL_ENCRYPTION_KEY || 'k7G1G8xHj9VbF5W1qZ3P6L0rD4mK8tY2uA1sE5wJ3n8=';
+  launch(python, ['-m', 'uvicorn', 'backend.app:app', '--host', '127.0.0.1', '--port', '8000', '--no-access-log', ...(!local ? ['--env-file', config] : [])], { ...process.env, ORIGINAL_ENCRYPTION_KEY: encryptionKey, AUTH_PROVIDER: local ? 'local' : 'supabase', APP_ORIGIN: 'http://127.0.0.1:5173' });
   let ready = false;
   for (let i = 0; i < 60 && !stopping; i++) {
     try {

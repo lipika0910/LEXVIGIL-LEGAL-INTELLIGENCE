@@ -25,6 +25,9 @@ import {
   Activity,
   Link2,
   ClipboardCheck,
+  Briefcase,
+  Brain,
+  Gavel,
 } from "lucide-react";
 import { api } from "./api";
 import { ReleaseScopeProvider, useReleaseScope } from './release-scope';
@@ -36,6 +39,9 @@ import {
   ReportPage,
 } from "./workspace";
 import { PilotPage } from "./pilot";
+import { Dashboard } from "./components/Dashboard";
+import { CaseWorkspace } from "./components/CaseWorkspace";
+import { JudicialPrecedentsView } from "./components/JudicialPrecedentsView";
 import "./styles.css";
 import "./brand.css";
 
@@ -303,7 +309,7 @@ function Auth({ onLogin }: { onLogin: (email: string) => void }) {
                 return;
               }
               onLogin(u.email);
-              navigate("/app/contracts");
+              navigate("/app/cases");
             } catch (e) {
               setError((e as Error).message);
             } finally {
@@ -389,6 +395,8 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
         <div className="workspace-label">WORKSPACE</div>
         <nav>
           {[
+            { path: "cases", icon: Briefcase, label: "Cases & Intelligence" },
+            { path: "precedents", icon: Gavel, label: "Judicial Precedents" },
             { path: "contracts", icon: FileText, label: "Analyze contract" },
             { path: "disputes", icon: Scale, label: "Analyze dispute" },
             { path: "research", icon: Search, label: "Legal research" },
@@ -460,13 +468,17 @@ function Shell({ email, onLogout }: { email: string; onLogout: () => void }) {
         <main className="workspace">
           {scope.profile === 'showcase' && <p role="status">Contract-analysis showcase · Rule-based findings require human review. Live AI research, scanned-document OCR and original-file storage are deferred.</p>}
           <Routes>
+            <Route path="cases" element={<Dashboard />} />
+            <Route path="cases/:id" element={<CaseWorkspace />} />
+            <Route path="precedents" element={<JudicialPrecedentsView />} />
+            <Route path="lab" element={<Navigate to="/app/precedents" replace />} />
             <Route path="contracts" element={<ContractPage />} />
-            <Route path="disputes" element={scope.research ? <ResearchPage kind="disputes" /> : <Navigate to="/app/contracts" replace />} />
-            <Route path="research" element={scope.research ? <ResearchPage kind="research" /> : <Navigate to="/app/contracts" replace />} />
+            <Route path="disputes" element={scope.research ? <ResearchPage kind="disputes" /> : <Navigate to="/app/cases" replace />} />
+            <Route path="research" element={scope.research ? <ResearchPage kind="research" /> : <Navigate to="/app/cases" replace />} />
             <Route path="history" element={<HistoryPage />} />
             <Route path="pilot" element={<PilotPage />} />
             <Route path="analyses/:id" element={<ReportPage />} />
-            <Route path="*" element={<Navigate to="contracts" replace />} />
+            <Route path="*" element={<Navigate to="cases" replace />} />
           </Routes>
         </main>
         <footer className="app-footer">
@@ -503,7 +515,7 @@ function App() {
         path="/login"
         element={
           user ? (
-            <Navigate to="/app/contracts" replace />
+            <Navigate to="/app/cases" replace />
           ) : (
             <Auth onLogin={setUser} />
           )

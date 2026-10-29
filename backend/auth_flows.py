@@ -21,13 +21,23 @@ class NewPassword(BaseModel):
 def digest(value):
     return hashlib.sha256(value.encode()).hexdigest()
 
-def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initialize_schema=True):
+def install_auth_flows(app, db, get_provider, rate, secure, origin, *, allowed_origins=None, initialize_schema=True):
     parsed = urlsplit(origin)
     if parsed.scheme not in ('http','https') or not parsed.netloc or parsed.path not in ('','/') or parsed.query or parsed.fragment or parsed.username:
         raise RuntimeError('APP_ORIGIN must be an origin without a path.')
     if secure and parsed.scheme != 'https':
         raise RuntimeError('Production authentication requires HTTPS.')
     origin = origin.rstrip('/')
+    allowed = {origin}
+    for candidate in allowed_origins or ():
+        parsed_candidate = urlsplit(candidate)
+        if (parsed_candidate.scheme not in ('http', 'https') or not parsed_candidate.netloc or
+                parsed_candidate.path not in ('', '/') or parsed_candidate.query or
+                parsed_candidate.fragment or parsed_candidate.username):
+            raise RuntimeError('Authentication origins must not contain a path, query or credentials.')
+        if secure and parsed_candidate.scheme != 'https':
+            raise RuntimeError('Production authentication requires HTTPS origins.')
+        allowed.add(candidate.rstrip('/'))
     if initialize_schema:
         with db.begin() as con:
             con.execute(text('CREATE TABLE IF NOT EXISTS auth_flows (token TEXT PRIMARY KEY, verifier TEXT NOT NULL, purpose TEXT NOT NULL, expires DOUBLE PRECISION NOT NULL)'))
@@ -40,14 +50,24 @@ def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initializ
     def cookie(response, name, value, ttl, path='/api/auth'):
         response.set_cookie(name, value, httponly=True, secure=secure, samesite='lax', max_age=ttl, path=path)
 
-    def create_flow(purpose, response):
+    def request_origin(request):
+        candidate = request.headers.get('origin', '').rstrip('/')
+        if not candidate:
+            proto = request.headers.get('x-forwarded-proto', request.url.scheme).split(',')[0].strip()
+            host = request.headers.get('x-forwarded-host', request.headers.get('host', '')).split(',')[0].strip()
+            candidate = (proto + '://' + host).rstrip('/') if proto and host else ''
+        if candidate not in allowed:
+            raise HTTPException(403, 'Origin is not allowed.')
+        return candidate
+
+    def create_flow(purpose, request, response):
         nonce, verifier = secrets.token_urlsafe(32), secrets.token_urlsafe(48)
         with db.begin() as con:
             con.execute(text('DELETE FROM auth_flows WHERE expires<=:now'), {'now':time.time()})
             con.execute(text('INSERT INTO auth_flows VALUES (:token,:verifier,:purpose,:expires)'),
                 {'token':digest(nonce),'verifier':verifier,'purpose':purpose,'expires':time.time()+600})
         cookie(response, 'lv_'+purpose+'_flow', nonce, 600)
-        callback = origin + '/api/auth/' + purpose + '/callback?' + urlencode({'flow':nonce})
+        callback = request_origin(request) + '/api/auth/' + purpose + '/callback?' + urlencode({'flow':nonce})
         challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).decode().rstrip('=')
         return callback, challenge
 
@@ -87,7 +107,7 @@ def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initializ
     def google_start(request:Request,response:Response):
         auth = provider()
         rate('oauth:'+str(request.client.host),8)
-        callback, challenge = create_flow('google',response)
+        callback, challenge = create_flow('google',request,response)
         return {'url':auth.url+'/auth/v1/authorize?'+urlencode({'provider':'google','redirect_to':callback,
             'code_challenge':challenge,'code_challenge_method':'s256','scopes':'email profile'})}
 
@@ -97,20 +117,22 @@ def install_auth_flows(app, db, get_provider, rate, secure, origin, *, initializ
         rate('recovery:'+str(request.client.host),3)
         email = body.email.strip().lower()
         if not re.fullmatch(r'[^\s@]+@[^\s@]+\.[^\s@]+',email): raise HTTPException(422,'Enter a valid email address.')
-        callback, challenge = create_flow('recovery',response)
+        callback, challenge = create_flow('recovery',request,response)
         auth.send_recovery(email,callback,challenge)
         return {'message':'If this address is eligible, a reset email will arrive. Open the newest link in this same browser within 10 minutes.'}
 
     def finish(request,purpose):
         stage = 'provider'
+        return_origin = origin
         try:
+            return_origin = request_origin(request)
             auth = provider()
             stage = 'flow'
             verifier, code = consume_flow(request,purpose)
             stage = 'exchange'
             identity,access,ttl = auth.exchange_code(code,verifier)
             target = '/reset-password' if purpose=='recovery' else '/app/contracts'
-            response = RedirectResponse(origin+target,status_code=303)
+            response = RedirectResponse(return_origin+target,status_code=303)
             stage = 'session'
             issue_session(response,identity,access,ttl,purpose=='recovery')
             logging.getLogger(__name__).info('Auth callback completed (%s)', purpose)

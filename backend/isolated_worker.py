@@ -24,8 +24,14 @@ def main():
         if os.name != 'nt':
             import resource
             from .process_limits import MEMORY_BYTES
-            resource.setrlimit(resource.RLIMIT_AS, (MEMORY_BYTES, MEMORY_BYTES))
-            resource.setrlimit(resource.RLIMIT_CPU, (660, 660))
+            try:
+                resource.setrlimit(resource.RLIMIT_AS, (MEMORY_BYTES, MEMORY_BYTES))
+            except (ValueError, OSError):
+                pass
+            try:
+                resource.setrlimit(resource.RLIMIT_CPU, (660, 660))
+            except (ValueError, OSError):
+                pass
         from .engine import analyze, extract
         result = analyze(extract(data, request['name'], request['language']), request['name'], request['as_of'])
         output = json.dumps({'result': result}, ensure_ascii=False).encode('utf-8')

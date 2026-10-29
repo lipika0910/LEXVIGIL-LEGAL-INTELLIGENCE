@@ -35,10 +35,17 @@ class Credentials(BaseModel):
     password: str = Field(min_length=12, max_length=128)
 
 
-def create_showcase_app(transactions, provider, origin, processor):
+def create_showcase_app(transactions, provider, origin, processor, *, allowed_origins=None):
     parsed = urlsplit(origin)
     if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.path or parsed.query or parsed.fragment:
         raise ValueError('Showcase requires an HTTPS origin without a path.')
+    allowed = {origin.rstrip('/')}
+    for candidate in allowed_origins or ():
+        parsed_candidate = urlsplit(candidate)
+        if (parsed_candidate.scheme != 'https' or not parsed_candidate.hostname or parsed_candidate.username or
+                parsed_candidate.password or parsed_candidate.path or parsed_candidate.query or parsed_candidate.fragment):
+            raise ValueError('Showcase origins require HTTPS without a path.')
+        allowed.add(candidate.rstrip('/'))
     authdb, reports = HostedAuthDatabase(transactions), HostedReports(transactions)
     slots = ShowcaseSlots(transactions)
     app = FastAPI(title='LexVigil contract showcase', docs_url=None, openapi_url=None)
@@ -61,7 +68,7 @@ def create_showcase_app(transactions, provider, origin, processor):
     @app.middleware('http')
     async def guard(request, call_next):
         if request.method in ('POST', 'PUT', 'PATCH', 'DELETE'):
-            if request.headers.get('origin') != origin or request.headers.get('sec-fetch-site') == 'cross-site':
+            if request.headers.get('origin', '').rstrip('/') not in allowed or request.headers.get('sec-fetch-site') == 'cross-site':
                 return JSONResponse({'detail': 'Origin is not allowed.'}, status_code=403, headers=SECURITY_HEADERS)
             try:
                 length = int(request.headers.get('content-length', '0'))
@@ -103,7 +110,8 @@ def create_showcase_app(transactions, provider, origin, processor):
             raise HTTPException(401, 'Session identity mismatch.')
         return verified
 
-    install_auth_flows(app, authdb, lambda: provider, rate, True, origin, initialize_schema=False)
+    install_auth_flows(app, authdb, lambda: provider, rate, True, origin,
+                       allowed_origins=allowed, initialize_schema=False)
 
     @app.post('/api/auth/{action}')
     def credentials(action: str, body: Credentials, request: Request, response: Response):

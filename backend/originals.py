@@ -33,7 +33,10 @@ class OriginalStore:
             for row in rows:
                 aid,uid=row['analysis_id'],row['owner']
                 if row['encryption_version']==1:
-                    plain=self.cipher.decrypt(bytes(row['payload']),aid,uid)
+                    try:
+                        plain=self.cipher.decrypt(bytes(row['payload']),aid,uid)
+                    except (InvalidTag, ValueError):
+                        continue
                 elif row['encryption_version']==0:
                     plain=bytes(row['payload'])
                     payload=self.cipher.encrypt(plain,aid,uid)

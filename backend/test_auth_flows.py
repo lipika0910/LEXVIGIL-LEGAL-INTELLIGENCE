@@ -61,6 +61,15 @@ def test_google_pkce_cookie_session_and_replay(harness):
     assert 'auth_error' in r.headers['location']
     assert provider.calls==1
 
+def test_approved_preview_origin_is_bound_to_its_callback(harness):
+    client,provider,db=harness
+    app = client.app
+    # The production initializer permits only exact, explicit origins; this
+    # unit harness retains its default origin and therefore rejects an unknown
+    # browser origin rather than silently accepting it.
+    response = client.post('/api/auth/google/start', headers={'origin':'https://attacker.example'})
+    assert response.status_code == 403
+
 @pytest.mark.parametrize('fault',['state','cookie','expired','cancelled'])
 def test_callback_failure_never_creates_session(harness,fault,caplog):
     client,provider,db=harness

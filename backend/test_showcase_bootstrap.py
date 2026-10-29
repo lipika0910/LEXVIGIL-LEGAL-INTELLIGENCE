@@ -40,6 +40,20 @@ def test_builds_only_hosted_factory_and_passes_public_ca():
     assert result is app
     assert factory.call_args.args[1].name=='prod-ca-2021.crt'
     assert app_factory.call_args.args[:3]==(tx,provider,'https://lexvigil.example')
+    assert app_factory.call_args.kwargs['allowed_origins']=={'https://lexvigil.example'}
+
+
+def test_accepts_only_the_current_lexvigil_preview_host():
+    env=environment() | {'VERCEL_ENV':'preview','VERCEL_URL':'lexvigil-unique-rakesh-projects.vercel.app'}
+    origin,key,passwords,allowed=validate_environment(env)
+    assert allowed == {'https://lexvigil.example','https://lexvigil-unique-rakesh-projects.vercel.app'}
+
+
+@pytest.mark.parametrize('host',["attacker.vercel.app", "lexvigil-attacker.example", "lexvigil-safe.vercel.app/path"])
+def test_rejects_unapproved_preview_host(host):
+    env=environment() | {'VERCEL_ENV':'preview','VERCEL_URL':host}
+    with pytest.raises(ValueError,match='Preview origin'):
+        validate_environment(env)
 
 
 def test_disposes_pools_if_app_creation_fails():
