@@ -34,3 +34,5 @@ supabase/.branches/
 output/
 ppt-build/
 docs/project-report-work/
+
+*.zip
